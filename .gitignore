@@ -1,0 +1,10 @@
+node_modules
+.nuxt
+.output
+dist
+.env
+.pnpm-store
+runtime/projects/*
+!runtime/projects/.gitkeep
+runtime/caddy/*
+!runtime/caddy/.gitkeep
