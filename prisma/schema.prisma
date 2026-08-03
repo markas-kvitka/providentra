@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum DeploymentStatus {
+  queued
+  cloning
+  building
+  starting
+  running
+  failed
+}
+
+enum ServiceType {
+  app
+  postgres
+}
+
+model Project {
+  id               String   @id @default(uuid())
+  name             String
+  slug             String   @unique
+  gitRepositoryUrl String
+  branch           String   @default("main")
+  appPort          Int      @default(3000)
+  domain           String
+  enablePostgres   Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  deployments          Deployment[]
+  environmentVariables EnvironmentVariable[]
+  services             Service[]
+}
+
+model Deployment {
+  id           String           @id @default(uuid())
+  projectId    String
+  status       DeploymentStatus @default(queued)
+  logs         String           @default("")
+  commitSha    String?
+  errorMessage String?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  project  Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  services Service[]
+}
+
+model EnvironmentVariable {
+  id        String @id @default(uuid())
+  projectId String
+  key       String
+  value     String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Service {
+  id            String      @id @default(uuid())
+  projectId     String
+  deploymentId  String?
+  type          ServiceType
+  containerName String?
+  status        String?
+  createdAt     DateTime    @default(now())
+
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  deployment Deployment? @relation(fields: [deploymentId], references: [id], onDelete: SetNull)
+}
