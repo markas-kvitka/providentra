@@ -9,6 +9,7 @@ RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY executor ./executor
 COPY lib/slug.ts ./lib/slug.ts
+COPY lib/managed-services.ts ./lib/managed-services.ts
 
 EXPOSE 3100
 

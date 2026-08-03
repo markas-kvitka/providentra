@@ -10,6 +10,6 @@
  */
 export type * from './models/Project'
 export type * from './models/Deployment'
-export type * from './models/EnvironmentVariable'
 export type * from './models/Service'
+export type * from './models/EnvironmentVariable'
 export type * from './commonInputTypes'

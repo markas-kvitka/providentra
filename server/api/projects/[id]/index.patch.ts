@@ -1,5 +1,6 @@
 import { prisma } from '~~/lib/db'
 import { ACTIVE_DEPLOYMENT_STATUSES } from '~~/lib/deployment-status'
+import { toProjectDetail, updateProjectFromInput } from '~~/lib/project-facade'
 import type { ProjectDetail } from '../../../../shared/types'
 import { isProjectDeletionPending } from '../../../queue'
 import { updateProjectSchema } from '../../../utils/validation'
@@ -50,50 +51,8 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const data = parsed.data
-
-  const updated = await prisma.$transaction(async (tx) => {
-    await tx.environmentVariable.deleteMany({
-      where: { projectId },
-    })
-
-    return tx.project.update({
-      where: { id: projectId },
-      data: {
-        gitRepositoryUrl: data.gitRepositoryUrl,
-        branch: data.branch,
-        appPort: data.appPort,
-        domain: data.domain,
-        enablePostgres: data.enablePostgres,
-        environmentVariables: {
-          create: data.environmentVariables.map((env) => ({
-            key: env.key,
-            value: env.value,
-          })),
-        },
-      },
-      include: {
-        environmentVariables: true,
-      },
-    })
-  })
-
-  const detail: ProjectDetail = {
-    id: updated.id,
-    name: updated.name,
-    slug: updated.slug,
-    gitRepositoryUrl: updated.gitRepositoryUrl,
-    branch: updated.branch,
-    appPort: updated.appPort,
-    domain: updated.domain,
-    enablePostgres: updated.enablePostgres,
-    environmentVariables: updated.environmentVariables.map((e) => ({
-      key: e.key,
-      value: e.value,
-    })),
-    createdAt: updated.createdAt.toISOString(),
-    updatedAt: updated.updatedAt.toISOString(),
-  }
+  const updated = await updateProjectFromInput(projectId, parsed.data)
+  const detail: ProjectDetail = toProjectDetail(updated)
 
   return detail
 })

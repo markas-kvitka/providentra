@@ -8,7 +8,7 @@ import { getProjectDir } from './slug'
 export interface ProjectCleanupTarget {
   slug: string
   domain: string
-  enablePostgres: boolean
+  hasManagedVolumes: boolean
 }
 
 export interface CaddyReloadConfig {
@@ -34,7 +34,7 @@ export async function cleanupProjectResources(
     // The executor runs as root and mounts the runtime dir, so it can remove
     // container-created files (e.g. root-owned node_modules) that the worker
     // process cannot delete directly.
-    await deploymentAdapter.down({ removeVolumes: project.enablePostgres, purgeFiles: true })
+    await deploymentAdapter.down({ removeVolumes: project.hasManagedVolumes, purgeFiles: true })
     filesPurged = true
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)

@@ -1,10 +1,21 @@
 import { getComposeProjectName } from '../slug'
+import type { ManagedServiceKey } from '../managed-services'
+
+export type DeployServiceSpec =
+  | {
+      type: 'app'
+      name: string
+      port: number
+      environmentVariables: Array<{ key: string; value: string }>
+    }
+  | {
+      type: ManagedServiceKey
+      name: string
+    }
 
 export interface DeploymentConfig {
   slug: string
-  appPort: number
-  enablePostgres: boolean
-  environmentVariables: Array<{ key: string; value: string }>
+  services: DeployServiceSpec[]
 }
 
 export interface DeploymentRunResult {

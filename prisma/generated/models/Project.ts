@@ -20,29 +20,14 @@ export type ProjectModel = runtime.Types.Result.DefaultSelection<Prisma.$Project
 
 export type AggregateProject = {
   _count: ProjectCountAggregateOutputType | null
-  _avg: ProjectAvgAggregateOutputType | null
-  _sum: ProjectSumAggregateOutputType | null
   _min: ProjectMinAggregateOutputType | null
   _max: ProjectMaxAggregateOutputType | null
-}
-
-export type ProjectAvgAggregateOutputType = {
-  appPort: number | null
-}
-
-export type ProjectSumAggregateOutputType = {
-  appPort: number | null
 }
 
 export type ProjectMinAggregateOutputType = {
   id: string | null
   name: string | null
   slug: string | null
-  gitRepositoryUrl: string | null
-  branch: string | null
-  appPort: number | null
-  domain: string | null
-  enablePostgres: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -51,11 +36,6 @@ export type ProjectMaxAggregateOutputType = {
   id: string | null
   name: string | null
   slug: string | null
-  gitRepositoryUrl: string | null
-  branch: string | null
-  appPort: number | null
-  domain: string | null
-  enablePostgres: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -64,34 +44,16 @@ export type ProjectCountAggregateOutputType = {
   id: number
   name: number
   slug: number
-  gitRepositoryUrl: number
-  branch: number
-  appPort: number
-  domain: number
-  enablePostgres: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
 
-export type ProjectAvgAggregateInputType = {
-  appPort?: true
-}
-
-export type ProjectSumAggregateInputType = {
-  appPort?: true
-}
-
 export type ProjectMinAggregateInputType = {
   id?: true
   name?: true
   slug?: true
-  gitRepositoryUrl?: true
-  branch?: true
-  appPort?: true
-  domain?: true
-  enablePostgres?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,11 +62,6 @@ export type ProjectMaxAggregateInputType = {
   id?: true
   name?: true
   slug?: true
-  gitRepositoryUrl?: true
-  branch?: true
-  appPort?: true
-  domain?: true
-  enablePostgres?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -113,11 +70,6 @@ export type ProjectCountAggregateInputType = {
   id?: true
   name?: true
   slug?: true
-  gitRepositoryUrl?: true
-  branch?: true
-  appPort?: true
-  domain?: true
-  enablePostgres?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -161,18 +113,6 @@ export type ProjectAggregateArgs<ExtArgs extends runtime.Types.Extensions.Intern
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: ProjectAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: ProjectSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: ProjectMinAggregateInputType
@@ -203,8 +143,6 @@ export type ProjectGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   _count?: ProjectCountAggregateInputType | true
-  _avg?: ProjectAvgAggregateInputType
-  _sum?: ProjectSumAggregateInputType
   _min?: ProjectMinAggregateInputType
   _max?: ProjectMaxAggregateInputType
 }
@@ -213,16 +151,9 @@ export type ProjectGroupByOutputType = {
   id: string
   name: string
   slug: string
-  gitRepositoryUrl: string
-  branch: string
-  appPort: number
-  domain: string
-  enablePostgres: boolean
   createdAt: Date
   updatedAt: Date
   _count: ProjectCountAggregateOutputType | null
-  _avg: ProjectAvgAggregateOutputType | null
-  _sum: ProjectSumAggregateOutputType | null
   _min: ProjectMinAggregateOutputType | null
   _max: ProjectMaxAggregateOutputType | null
 }
@@ -249,15 +180,9 @@ export type ProjectWhereInput = {
   id?: Prisma.StringFilter<"Project"> | string
   name?: Prisma.StringFilter<"Project"> | string
   slug?: Prisma.StringFilter<"Project"> | string
-  gitRepositoryUrl?: Prisma.StringFilter<"Project"> | string
-  branch?: Prisma.StringFilter<"Project"> | string
-  appPort?: Prisma.IntFilter<"Project"> | number
-  domain?: Prisma.StringFilter<"Project"> | string
-  enablePostgres?: Prisma.BoolFilter<"Project"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   deployments?: Prisma.DeploymentListRelationFilter
-  environmentVariables?: Prisma.EnvironmentVariableListRelationFilter
   services?: Prisma.ServiceListRelationFilter
 }
 
@@ -265,15 +190,9 @@ export type ProjectOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  gitRepositoryUrl?: Prisma.SortOrder
-  branch?: Prisma.SortOrder
-  appPort?: Prisma.SortOrder
-  domain?: Prisma.SortOrder
-  enablePostgres?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deployments?: Prisma.DeploymentOrderByRelationAggregateInput
-  environmentVariables?: Prisma.EnvironmentVariableOrderByRelationAggregateInput
   services?: Prisma.ServiceOrderByRelationAggregateInput
 }
 
@@ -284,15 +203,9 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ProjectWhereInput[]
   NOT?: Prisma.ProjectWhereInput | Prisma.ProjectWhereInput[]
   name?: Prisma.StringFilter<"Project"> | string
-  gitRepositoryUrl?: Prisma.StringFilter<"Project"> | string
-  branch?: Prisma.StringFilter<"Project"> | string
-  appPort?: Prisma.IntFilter<"Project"> | number
-  domain?: Prisma.StringFilter<"Project"> | string
-  enablePostgres?: Prisma.BoolFilter<"Project"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   deployments?: Prisma.DeploymentListRelationFilter
-  environmentVariables?: Prisma.EnvironmentVariableListRelationFilter
   services?: Prisma.ServiceListRelationFilter
 }, "id" | "slug">
 
@@ -300,18 +213,11 @@ export type ProjectOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  gitRepositoryUrl?: Prisma.SortOrder
-  branch?: Prisma.SortOrder
-  appPort?: Prisma.SortOrder
-  domain?: Prisma.SortOrder
-  enablePostgres?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProjectCountOrderByAggregateInput
-  _avg?: Prisma.ProjectAvgOrderByAggregateInput
   _max?: Prisma.ProjectMaxOrderByAggregateInput
   _min?: Prisma.ProjectMinOrderByAggregateInput
-  _sum?: Prisma.ProjectSumOrderByAggregateInput
 }
 
 export type ProjectScalarWhereWithAggregatesInput = {
@@ -321,11 +227,6 @@ export type ProjectScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Project"> | string
   name?: Prisma.StringWithAggregatesFilter<"Project"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Project"> | string
-  gitRepositoryUrl?: Prisma.StringWithAggregatesFilter<"Project"> | string
-  branch?: Prisma.StringWithAggregatesFilter<"Project"> | string
-  appPort?: Prisma.IntWithAggregatesFilter<"Project"> | number
-  domain?: Prisma.StringWithAggregatesFilter<"Project"> | string
-  enablePostgres?: Prisma.BoolWithAggregatesFilter<"Project"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
 }
@@ -334,15 +235,9 @@ export type ProjectCreateInput = {
   id?: string
   name: string
   slug: string
-  gitRepositoryUrl: string
-  branch?: string
-  appPort?: number
-  domain: string
-  enablePostgres?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deployments?: Prisma.DeploymentCreateNestedManyWithoutProjectInput
-  environmentVariables?: Prisma.EnvironmentVariableCreateNestedManyWithoutProjectInput
   services?: Prisma.ServiceCreateNestedManyWithoutProjectInput
 }
 
@@ -350,15 +245,9 @@ export type ProjectUncheckedCreateInput = {
   id?: string
   name: string
   slug: string
-  gitRepositoryUrl: string
-  branch?: string
-  appPort?: number
-  domain: string
-  enablePostgres?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deployments?: Prisma.DeploymentUncheckedCreateNestedManyWithoutProjectInput
-  environmentVariables?: Prisma.EnvironmentVariableUncheckedCreateNestedManyWithoutProjectInput
   services?: Prisma.ServiceUncheckedCreateNestedManyWithoutProjectInput
 }
 
@@ -366,15 +255,9 @@ export type ProjectUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  gitRepositoryUrl?: Prisma.StringFieldUpdateOperationsInput | string
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
-  appPort?: Prisma.IntFieldUpdateOperationsInput | number
-  domain?: Prisma.StringFieldUpdateOperationsInput | string
-  enablePostgres?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deployments?: Prisma.DeploymentUpdateManyWithoutProjectNestedInput
-  environmentVariables?: Prisma.EnvironmentVariableUpdateManyWithoutProjectNestedInput
   services?: Prisma.ServiceUpdateManyWithoutProjectNestedInput
 }
 
@@ -382,15 +265,9 @@ export type ProjectUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  gitRepositoryUrl?: Prisma.StringFieldUpdateOperationsInput | string
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
-  appPort?: Prisma.IntFieldUpdateOperationsInput | number
-  domain?: Prisma.StringFieldUpdateOperationsInput | string
-  enablePostgres?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deployments?: Prisma.DeploymentUncheckedUpdateManyWithoutProjectNestedInput
-  environmentVariables?: Prisma.EnvironmentVariableUncheckedUpdateManyWithoutProjectNestedInput
   services?: Prisma.ServiceUncheckedUpdateManyWithoutProjectNestedInput
 }
 
@@ -398,11 +275,6 @@ export type ProjectCreateManyInput = {
   id?: string
   name: string
   slug: string
-  gitRepositoryUrl: string
-  branch?: string
-  appPort?: number
-  domain: string
-  enablePostgres?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -411,11 +283,6 @@ export type ProjectUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  gitRepositoryUrl?: Prisma.StringFieldUpdateOperationsInput | string
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
-  appPort?: Prisma.IntFieldUpdateOperationsInput | number
-  domain?: Prisma.StringFieldUpdateOperationsInput | string
-  enablePostgres?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -424,11 +291,6 @@ export type ProjectUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  gitRepositoryUrl?: Prisma.StringFieldUpdateOperationsInput | string
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
-  appPort?: Prisma.IntFieldUpdateOperationsInput | number
-  domain?: Prisma.StringFieldUpdateOperationsInput | string
-  enablePostgres?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -437,28 +299,14 @@ export type ProjectCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  gitRepositoryUrl?: Prisma.SortOrder
-  branch?: Prisma.SortOrder
-  appPort?: Prisma.SortOrder
-  domain?: Prisma.SortOrder
-  enablePostgres?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type ProjectAvgOrderByAggregateInput = {
-  appPort?: Prisma.SortOrder
 }
 
 export type ProjectMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  gitRepositoryUrl?: Prisma.SortOrder
-  branch?: Prisma.SortOrder
-  appPort?: Prisma.SortOrder
-  domain?: Prisma.SortOrder
-  enablePostgres?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -467,17 +315,8 @@ export type ProjectMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  gitRepositoryUrl?: Prisma.SortOrder
-  branch?: Prisma.SortOrder
-  appPort?: Prisma.SortOrder
-  domain?: Prisma.SortOrder
-  enablePostgres?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type ProjectSumOrderByAggregateInput = {
-  appPort?: Prisma.SortOrder
 }
 
 export type ProjectScalarRelationFilter = {
@@ -487,18 +326,6 @@ export type ProjectScalarRelationFilter = {
 
 export type StringFieldUpdateOperationsInput = {
   set?: string
-}
-
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -519,20 +346,6 @@ export type ProjectUpdateOneRequiredWithoutDeploymentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutDeploymentsInput, Prisma.ProjectUpdateWithoutDeploymentsInput>, Prisma.ProjectUncheckedUpdateWithoutDeploymentsInput>
 }
 
-export type ProjectCreateNestedOneWithoutEnvironmentVariablesInput = {
-  create?: Prisma.XOR<Prisma.ProjectCreateWithoutEnvironmentVariablesInput, Prisma.ProjectUncheckedCreateWithoutEnvironmentVariablesInput>
-  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutEnvironmentVariablesInput
-  connect?: Prisma.ProjectWhereUniqueInput
-}
-
-export type ProjectUpdateOneRequiredWithoutEnvironmentVariablesNestedInput = {
-  create?: Prisma.XOR<Prisma.ProjectCreateWithoutEnvironmentVariablesInput, Prisma.ProjectUncheckedCreateWithoutEnvironmentVariablesInput>
-  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutEnvironmentVariablesInput
-  upsert?: Prisma.ProjectUpsertWithoutEnvironmentVariablesInput
-  connect?: Prisma.ProjectWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutEnvironmentVariablesInput, Prisma.ProjectUpdateWithoutEnvironmentVariablesInput>, Prisma.ProjectUncheckedUpdateWithoutEnvironmentVariablesInput>
-}
-
 export type ProjectCreateNestedOneWithoutServicesInput = {
   create?: Prisma.XOR<Prisma.ProjectCreateWithoutServicesInput, Prisma.ProjectUncheckedCreateWithoutServicesInput>
   connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutServicesInput
@@ -551,14 +364,8 @@ export type ProjectCreateWithoutDeploymentsInput = {
   id?: string
   name: string
   slug: string
-  gitRepositoryUrl: string
-  branch?: string
-  appPort?: number
-  domain: string
-  enablePostgres?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  environmentVariables?: Prisma.EnvironmentVariableCreateNestedManyWithoutProjectInput
   services?: Prisma.ServiceCreateNestedManyWithoutProjectInput
 }
 
@@ -566,14 +373,8 @@ export type ProjectUncheckedCreateWithoutDeploymentsInput = {
   id?: string
   name: string
   slug: string
-  gitRepositoryUrl: string
-  branch?: string
-  appPort?: number
-  domain: string
-  enablePostgres?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  environmentVariables?: Prisma.EnvironmentVariableUncheckedCreateNestedManyWithoutProjectInput
   services?: Prisma.ServiceUncheckedCreateNestedManyWithoutProjectInput
 }
 
@@ -597,14 +398,8 @@ export type ProjectUpdateWithoutDeploymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  gitRepositoryUrl?: Prisma.StringFieldUpdateOperationsInput | string
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
-  appPort?: Prisma.IntFieldUpdateOperationsInput | number
-  domain?: Prisma.StringFieldUpdateOperationsInput | string
-  enablePostgres?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  environmentVariables?: Prisma.EnvironmentVariableUpdateManyWithoutProjectNestedInput
   services?: Prisma.ServiceUpdateManyWithoutProjectNestedInput
 }
 
@@ -612,90 +407,8 @@ export type ProjectUncheckedUpdateWithoutDeploymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  gitRepositoryUrl?: Prisma.StringFieldUpdateOperationsInput | string
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
-  appPort?: Prisma.IntFieldUpdateOperationsInput | number
-  domain?: Prisma.StringFieldUpdateOperationsInput | string
-  enablePostgres?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  environmentVariables?: Prisma.EnvironmentVariableUncheckedUpdateManyWithoutProjectNestedInput
-  services?: Prisma.ServiceUncheckedUpdateManyWithoutProjectNestedInput
-}
-
-export type ProjectCreateWithoutEnvironmentVariablesInput = {
-  id?: string
-  name: string
-  slug: string
-  gitRepositoryUrl: string
-  branch?: string
-  appPort?: number
-  domain: string
-  enablePostgres?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  deployments?: Prisma.DeploymentCreateNestedManyWithoutProjectInput
-  services?: Prisma.ServiceCreateNestedManyWithoutProjectInput
-}
-
-export type ProjectUncheckedCreateWithoutEnvironmentVariablesInput = {
-  id?: string
-  name: string
-  slug: string
-  gitRepositoryUrl: string
-  branch?: string
-  appPort?: number
-  domain: string
-  enablePostgres?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  deployments?: Prisma.DeploymentUncheckedCreateNestedManyWithoutProjectInput
-  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutProjectInput
-}
-
-export type ProjectCreateOrConnectWithoutEnvironmentVariablesInput = {
-  where: Prisma.ProjectWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProjectCreateWithoutEnvironmentVariablesInput, Prisma.ProjectUncheckedCreateWithoutEnvironmentVariablesInput>
-}
-
-export type ProjectUpsertWithoutEnvironmentVariablesInput = {
-  update: Prisma.XOR<Prisma.ProjectUpdateWithoutEnvironmentVariablesInput, Prisma.ProjectUncheckedUpdateWithoutEnvironmentVariablesInput>
-  create: Prisma.XOR<Prisma.ProjectCreateWithoutEnvironmentVariablesInput, Prisma.ProjectUncheckedCreateWithoutEnvironmentVariablesInput>
-  where?: Prisma.ProjectWhereInput
-}
-
-export type ProjectUpdateToOneWithWhereWithoutEnvironmentVariablesInput = {
-  where?: Prisma.ProjectWhereInput
-  data: Prisma.XOR<Prisma.ProjectUpdateWithoutEnvironmentVariablesInput, Prisma.ProjectUncheckedUpdateWithoutEnvironmentVariablesInput>
-}
-
-export type ProjectUpdateWithoutEnvironmentVariablesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  gitRepositoryUrl?: Prisma.StringFieldUpdateOperationsInput | string
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
-  appPort?: Prisma.IntFieldUpdateOperationsInput | number
-  domain?: Prisma.StringFieldUpdateOperationsInput | string
-  enablePostgres?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  deployments?: Prisma.DeploymentUpdateManyWithoutProjectNestedInput
-  services?: Prisma.ServiceUpdateManyWithoutProjectNestedInput
-}
-
-export type ProjectUncheckedUpdateWithoutEnvironmentVariablesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  gitRepositoryUrl?: Prisma.StringFieldUpdateOperationsInput | string
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
-  appPort?: Prisma.IntFieldUpdateOperationsInput | number
-  domain?: Prisma.StringFieldUpdateOperationsInput | string
-  enablePostgres?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  deployments?: Prisma.DeploymentUncheckedUpdateManyWithoutProjectNestedInput
   services?: Prisma.ServiceUncheckedUpdateManyWithoutProjectNestedInput
 }
 
@@ -703,30 +416,18 @@ export type ProjectCreateWithoutServicesInput = {
   id?: string
   name: string
   slug: string
-  gitRepositoryUrl: string
-  branch?: string
-  appPort?: number
-  domain: string
-  enablePostgres?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deployments?: Prisma.DeploymentCreateNestedManyWithoutProjectInput
-  environmentVariables?: Prisma.EnvironmentVariableCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutServicesInput = {
   id?: string
   name: string
   slug: string
-  gitRepositoryUrl: string
-  branch?: string
-  appPort?: number
-  domain: string
-  enablePostgres?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deployments?: Prisma.DeploymentUncheckedCreateNestedManyWithoutProjectInput
-  environmentVariables?: Prisma.EnvironmentVariableUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutServicesInput = {
@@ -749,30 +450,18 @@ export type ProjectUpdateWithoutServicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  gitRepositoryUrl?: Prisma.StringFieldUpdateOperationsInput | string
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
-  appPort?: Prisma.IntFieldUpdateOperationsInput | number
-  domain?: Prisma.StringFieldUpdateOperationsInput | string
-  enablePostgres?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deployments?: Prisma.DeploymentUpdateManyWithoutProjectNestedInput
-  environmentVariables?: Prisma.EnvironmentVariableUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutServicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  gitRepositoryUrl?: Prisma.StringFieldUpdateOperationsInput | string
-  branch?: Prisma.StringFieldUpdateOperationsInput | string
-  appPort?: Prisma.IntFieldUpdateOperationsInput | number
-  domain?: Prisma.StringFieldUpdateOperationsInput | string
-  enablePostgres?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deployments?: Prisma.DeploymentUncheckedUpdateManyWithoutProjectNestedInput
-  environmentVariables?: Prisma.EnvironmentVariableUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 
@@ -782,13 +471,11 @@ export type ProjectUncheckedUpdateWithoutServicesInput = {
 
 export type ProjectCountOutputType = {
   deployments: number
-  environmentVariables: number
   services: number
 }
 
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   deployments?: boolean | ProjectCountOutputTypeCountDeploymentsArgs
-  environmentVariables?: boolean | ProjectCountOutputTypeCountEnvironmentVariablesArgs
   services?: boolean | ProjectCountOutputTypeCountServicesArgs
 }
 
@@ -812,13 +499,6 @@ export type ProjectCountOutputTypeCountDeploymentsArgs<ExtArgs extends runtime.T
 /**
  * ProjectCountOutputType without action
  */
-export type ProjectCountOutputTypeCountEnvironmentVariablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.EnvironmentVariableWhereInput
-}
-
-/**
- * ProjectCountOutputType without action
- */
 export type ProjectCountOutputTypeCountServicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ServiceWhereInput
 }
@@ -828,15 +508,9 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   id?: boolean
   name?: boolean
   slug?: boolean
-  gitRepositoryUrl?: boolean
-  branch?: boolean
-  appPort?: boolean
-  domain?: boolean
-  enablePostgres?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deployments?: boolean | Prisma.Project$deploymentsArgs<ExtArgs>
-  environmentVariables?: boolean | Prisma.Project$environmentVariablesArgs<ExtArgs>
   services?: boolean | Prisma.Project$servicesArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
@@ -845,11 +519,6 @@ export type ProjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   name?: boolean
   slug?: boolean
-  gitRepositoryUrl?: boolean
-  branch?: boolean
-  appPort?: boolean
-  domain?: boolean
-  enablePostgres?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["project"]>
@@ -858,11 +527,6 @@ export type ProjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   name?: boolean
   slug?: boolean
-  gitRepositoryUrl?: boolean
-  branch?: boolean
-  appPort?: boolean
-  domain?: boolean
-  enablePostgres?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["project"]>
@@ -871,19 +535,13 @@ export type ProjectSelectScalar = {
   id?: boolean
   name?: boolean
   slug?: boolean
-  gitRepositoryUrl?: boolean
-  branch?: boolean
-  appPort?: boolean
-  domain?: boolean
-  enablePostgres?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "gitRepositoryUrl" | "branch" | "appPort" | "domain" | "enablePostgres" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
+export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   deployments?: boolean | Prisma.Project$deploymentsArgs<ExtArgs>
-  environmentVariables?: boolean | Prisma.Project$environmentVariablesArgs<ExtArgs>
   services?: boolean | Prisma.Project$servicesArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -894,18 +552,12 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   name: "Project"
   objects: {
     deployments: Prisma.$DeploymentPayload<ExtArgs>[]
-    environmentVariables: Prisma.$EnvironmentVariablePayload<ExtArgs>[]
     services: Prisma.$ServicePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
     slug: string
-    gitRepositoryUrl: string
-    branch: string
-    appPort: number
-    domain: string
-    enablePostgres: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["project"]>
@@ -1303,7 +955,6 @@ readonly fields: ProjectFieldRefs;
 export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   deployments<T extends Prisma.Project$deploymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$deploymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeploymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  environmentVariables<T extends Prisma.Project$environmentVariablesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$environmentVariablesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EnvironmentVariablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   services<T extends Prisma.Project$servicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1337,11 +988,6 @@ export interface ProjectFieldRefs {
   readonly id: Prisma.FieldRef<"Project", 'String'>
   readonly name: Prisma.FieldRef<"Project", 'String'>
   readonly slug: Prisma.FieldRef<"Project", 'String'>
-  readonly gitRepositoryUrl: Prisma.FieldRef<"Project", 'String'>
-  readonly branch: Prisma.FieldRef<"Project", 'String'>
-  readonly appPort: Prisma.FieldRef<"Project", 'Int'>
-  readonly domain: Prisma.FieldRef<"Project", 'String'>
-  readonly enablePostgres: Prisma.FieldRef<"Project", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Project", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Project", 'DateTime'>
 }
@@ -1758,30 +1404,6 @@ export type Project$deploymentsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.DeploymentScalarFieldEnum | Prisma.DeploymentScalarFieldEnum[]
-}
-
-/**
- * Project.environmentVariables
- */
-export type Project$environmentVariablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the EnvironmentVariable
-   */
-  select?: Prisma.EnvironmentVariableSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the EnvironmentVariable
-   */
-  omit?: Prisma.EnvironmentVariableOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.EnvironmentVariableInclude<ExtArgs> | null
-  where?: Prisma.EnvironmentVariableWhereInput
-  orderBy?: Prisma.EnvironmentVariableOrderByWithRelationInput | Prisma.EnvironmentVariableOrderByWithRelationInput[]
-  cursor?: Prisma.EnvironmentVariableWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.EnvironmentVariableScalarFieldEnum | Prisma.EnvironmentVariableScalarFieldEnum[]
 }
 
 /**

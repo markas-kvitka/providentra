@@ -1,5 +1,10 @@
 import { prisma } from '~~/lib/db'
 import { cleanupProjectResources } from '~~/lib/project-cleanup'
+import {
+  getPrimaryAppService,
+  loadProjectWithServices,
+  projectHasManagedVolumes,
+} from '~~/lib/project-facade'
 import { cancelActiveDeploymentJobsForProject } from '../../server/queue/index'
 import type { DeleteProjectJobData } from '~~/lib/queue'
 import { caddyConfigDir, caddyfilePath, dockerExecutorUrl, runtimeDir } from '../config'
@@ -7,9 +12,7 @@ import { caddyConfigDir, caddyfilePath, dockerExecutorUrl, runtimeDir } from '..
 export async function processProjectDeletion(data: DeleteProjectJobData): Promise<void> {
   const { projectId } = data
 
-  const project = await prisma.project.findUnique({
-    where: { id: projectId },
-  })
+  const project = await loadProjectWithServices(projectId)
 
   if (!project) {
     console.log(`Project ${projectId} already deleted, skipping`)
@@ -20,11 +23,16 @@ export async function processProjectDeletion(data: DeleteProjectJobData): Promis
 
   await cancelActiveDeploymentJobsForProject(projectId)
 
+  const app = getPrimaryAppService(project.services)
+  if (!app.domain) {
+    throw new Error(`Project ${project.slug} app service is missing a domain`)
+  }
+
   await cleanupProjectResources(
     {
       slug: project.slug,
-      domain: project.domain,
-      enablePostgres: project.enablePostgres,
+      domain: app.domain,
+      hasManagedVolumes: projectHasManagedVolumes(project.services),
     },
     runtimeDir,
     caddyConfigDir,

@@ -1,4 +1,5 @@
 import { prisma } from '~~/lib/db'
+import { createProjectFromInput } from '~~/lib/project-facade'
 import { toSlug } from '~~/lib/slug'
 import { createProjectSchema } from '../../utils/validation'
 
@@ -28,23 +29,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const project = await prisma.project.create({
-    data: {
-      name: data.name,
-      slug,
-      gitRepositoryUrl: data.gitRepositoryUrl,
-      branch: data.branch,
-      appPort: data.appPort,
-      domain: data.domain,
-      enablePostgres: data.enablePostgres,
-      environmentVariables: {
-        create: data.environmentVariables.map((env) => ({
-          key: env.key,
-          value: env.value,
-        })),
-      },
-    },
-  })
+  const project = await createProjectFromInput(data, slug)
 
   return {
     id: project.id,

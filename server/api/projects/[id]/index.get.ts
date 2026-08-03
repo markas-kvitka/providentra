@@ -1,4 +1,5 @@
 import { prisma } from '~~/lib/db'
+import { getPrimaryAppService, toProjectDetail } from '~~/lib/project-facade'
 import type { ProjectDetail, DeploymentSummary } from '../../../../shared/types'
 
 export default defineEventHandler(async (event) => {
@@ -10,7 +11,10 @@ export default defineEventHandler(async (event) => {
   const project = await prisma.project.findUnique({
     where: { id },
     include: {
-      environmentVariables: true,
+      services: {
+        include: { environmentVariables: true },
+        orderBy: { createdAt: 'asc' },
+      },
       deployments: {
         orderBy: { createdAt: 'desc' },
         take: 20,
@@ -22,22 +26,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Project not found' })
   }
 
-  const detail: ProjectDetail = {
-    id: project.id,
-    name: project.name,
-    slug: project.slug,
-    gitRepositoryUrl: project.gitRepositoryUrl,
-    branch: project.branch,
-    appPort: project.appPort,
-    domain: project.domain,
-    enablePostgres: project.enablePostgres,
-    environmentVariables: project.environmentVariables.map((e) => ({
-      key: e.key,
-      value: e.value,
-    })),
-    createdAt: project.createdAt.toISOString(),
-    updatedAt: project.updatedAt.toISOString(),
+  try {
+    getPrimaryAppService(project.services)
+  } catch {
+    throw createError({ statusCode: 500, statusMessage: 'Project is missing an app service' })
   }
+
+  const detail: ProjectDetail = toProjectDetail(project)
 
   const deployments: DeploymentSummary[] = project.deployments.map((d) => ({
     id: d.id,

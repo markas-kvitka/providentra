@@ -1,6 +1,6 @@
 # Providentra
 
-A self-hosted "Vercel-lite" deployment platform. Define projects via a Nuxt control panel, trigger deployments, and run apps on the same machine using Docker Compose with Caddy as a reverse proxy.
+A self-hosted "Vercel-lite" deployment platform. Define projects via a Nuxt control panel, trigger deployments, and run apps on the same machine as Docker containers with Caddy as a reverse proxy.
 
 ## Architecture
 
@@ -12,28 +12,36 @@ A self-hosted "Vercel-lite" deployment platform. Define projects via a Nuxt cont
        │                                      │
        ▼                                      ▼
 ┌─────────────┐                    ┌──────────────────┐
-│ PostgreSQL  │                    │ Docker Compose   │
-│  (metadata) │                    │ (deployed apps)  │
-└─────────────┘                    └──────────────────┘
-                                              │
-                                              ▼
-                                     ┌──────────────────┐
-                                     │      Caddy       │
-                                     │ (reverse proxy)  │
-                                     └──────────────────┘
+│ PostgreSQL  │                    │ Docker Executor  │
+│  (metadata) │                    │ (Docker Engine)  │
+└─────────────┘                    └────────┬─────────┘
+                                            │
+                                   ┌────────┴─────────┐
+                                   │                  │
+                                   ▼                  ▼
+                          ┌──────────────┐   ┌──────────────────┐
+                          │ App / DB     │   │      Caddy       │
+                          │ containers   │   │ (reverse proxy)  │
+                          └──────────────┘   └──────────────────┘
 ```
 
 - **Nuxt app** — control panel UI and REST API
-- **Worker** — separate process that clones repos, builds images, and starts containers
-- **BullMQ + Redis** — job queue between API and worker
-- **PostgreSQL** — projects, deployments, env vars, services
-- **Docker Compose** — runs each deployed app (and optional Postgres)
-- **Caddy** — routes domains to deployed app ports
+- **Worker** — clones/pulls repos, calls the Docker executor, writes Caddy site configs
+- **BullMQ + Redis** — job queue between API and worker (deploy + project deletion)
+- **PostgreSQL** — projects, deployments, and first-class services (app, postgres, …)
+- **Docker executor** — privileged HTTP service with access to the Docker socket; builds/runs the project's service set via Dockerode
+- **Caddy** — routes domains to deployed app ports on the host
+
+A **Project** is a namespace. Under the hood it owns **Services** (today: one `web` app and an optional `postgres`). The control panel UI still presents a simple single-app form with a PostgreSQL checkbox; the API maps that onto the service model.
+
+Managed add-ons (Postgres today; Redis recipe ready) are defined in [`lib/managed-services.ts`](lib/managed-services.ts). The executor looks up image, volumes, healthchecks, and app env injection from that catalog — not hardcoded per service in deploy logic.
+
+Platform infrastructure (Postgres, Redis, Caddy, docker-executor) runs via `docker-compose.yml`. Deployed apps are managed directly through the Docker Engine API — not via generated Compose files.
 
 ## Prerequisites
 
-- Node.js 20+
-- pnpm 9+ (`corepack enable` to activate)
+- Node.js 20+ (`.nvmrc` pins 24)
+- pnpm 9+ (`corepack enable` to activate; repo uses pnpm 11)
 - Docker and Docker Compose v2
 - Git
 
@@ -45,7 +53,7 @@ A self-hosted "Vercel-lite" deployment platform. Define projects via a Nuxt cont
 docker compose up -d
 ```
 
-This starts PostgreSQL, Redis, and Caddy.
+This starts PostgreSQL, Redis, Caddy, and the Docker executor (`http://127.0.0.1:3100`).
 
 ### 2. Configure environment
 
@@ -81,7 +89,7 @@ In a separate terminal:
 pnpm run worker
 ```
 
-The worker must be running for deployments to process.
+The worker must be running for deployments (and project deletions) to process.
 
 ## Usage
 
@@ -89,48 +97,63 @@ The worker must be running for deployments to process.
    - Project name
    - Git repository URL
    - Branch
-   - App port (the port your app listens on)
+   - App port (the port your app listens on; bound on the host)
    - Domain (e.g. `myapp.localhost` — add to `/etc/hosts` pointing to `127.0.0.1`)
    - Environment variables (optional)
    - PostgreSQL toggle (optional)
 
 2. **Deploy** — open the project detail page and click **Deploy**.
 
-3. **Monitor** — watch deployment status and logs on the project detail page.
+3. **Monitor** — watch deployment status and logs on the project detail page. Failed deployments can be retried.
+
+4. **Update / delete** — edit project settings from the detail page, or delete the project to tear down containers, volumes, and runtime files asynchronously.
 
 ## How Deployments Work
 
 1. API creates a deployment record with status `queued` and enqueues a BullMQ job
 2. Worker picks up the job and updates status through: `cloning` → `building` → `starting` → `running`
-3. Worker clones/pulls the repo into `./runtime/projects/{slug}/repo`
-4. Worker generates `docker-compose.yml` with app service (and optional Postgres)
-5. Worker runs `docker compose up -d --build`
-6. Worker writes a Caddy config snippet for the project's domain, then asks the executor to reload Caddy (the executor POSTs the Caddyfile to Caddy's admin API `/load` over the internal Docker network)
-7. On failure, containers are torn down and status is set to `failed`
+3. Worker loads the project's services, then clones/pulls the app service repo into `./runtime/projects/{slug}/repo`
+4. Worker calls the Docker executor (`POST /deploy`) with the full service list, which:
+   - Creates a managed Docker network for the project
+   - Starts managed services (e.g. Postgres) when present
+   - Builds the app from `Dockerfile` if present, otherwise runs `node:22-alpine` with `npm install && npm start` (bind-mounted repo)
+   - Publishes the app container on the app service's configured host port
+5. Worker writes a Caddy config snippet for the app service domain under `./runtime/caddy/`, then asks the executor to reload Caddy (`POST /caddy/reload` → Caddy admin API `/load` on the internal Docker network)
+6. Worker updates each service row with container name and `running` status
+7. On failure, the executor tears down project containers and status is set to `failed`
+
+Project deletion is a separate BullMQ job: it stops containers, removes volumes/files when requested, clears Caddy config, and deletes the project row.
 
 ## Project Structure
 
 ```
 providentra/
-├── app/                    # Nuxt UI pages and layouts
+├── app/                       # Nuxt UI pages and layouts
 ├── server/
-│   ├── api/                # REST API routes
-│   ├── adapters/
-│   │   ├── git.ts          # Git clone/pull logic
-│   │   └── docker-compose.ts  # Compose generation & Docker commands
-│   ├── db/                 # Prisma client
-│   └── queue/              # BullMQ queue helpers
+│   ├── api/                   # REST API routes
+│   ├── queue/                 # BullMQ enqueue helpers
+│   └── utils/                 # Zod validation
 ├── worker/
-│   └── index.ts            # Deployment worker entrypoint
+│   ├── deployment/            # Deploy job processor
+│   └── delete-project/        # Project cleanup job processor
+├── executor/                  # Docker + Caddy HTTP service (runs in Compose)
+├── lib/
+│   ├── adapters/              # Git, Caddy, Docker executor client
+│   ├── db.ts                  # Prisma client
+│   ├── project-facade.ts      # Maps simple project DTOs ↔ services
+│   ├── managed-services.ts    # Catalog of managed add-on recipes (postgres, redis, …)
+│   ├── queue.ts               # Shared queue definitions
+│   └── project-cleanup.ts     # Teardown helpers
 ├── shared/
-│   └── types.ts            # Shared TypeScript types
+│   └── types.ts               # Shared TypeScript types (UI-facing project shape)
 ├── runtime/
-│   ├── projects/           # Cloned repos (gitignored)
-│   └── caddy/              # Per-project Caddy configs
-├── prisma/                 # Prisma schema and migrations
-├── prisma.config.ts        # Prisma CLI config (loads .env, datasource URL)
-├── docker-compose.yml      # Platform infrastructure
-└── Caddyfile               # Base Caddy config
+│   ├── projects/              # Cloned repos (gitignored)
+│   └── caddy/                 # Per-project Caddy site snippets
+├── prisma/                    # Schema, migrations, generated client
+│                              # Project = namespace; Service = app/postgres/…
+├── prisma.config.ts           # Prisma CLI config (loads .env, datasource URL)
+├── docker-compose.yml         # Platform infrastructure
+└── Caddyfile                  # Base Caddy config (imports runtime/caddy/*.caddy)
 ```
 
 ## API Endpoints
@@ -140,8 +163,11 @@ providentra/
 | GET | `/api/projects` | List all projects |
 | POST | `/api/projects` | Create a project |
 | GET | `/api/projects/:id` | Project details + deployment history |
+| PATCH | `/api/projects/:id` | Update project settings / env vars |
+| DELETE | `/api/projects/:id` | Queue project deletion (async teardown) |
 | POST | `/api/projects/:id/deploy` | Trigger a deployment |
 | GET | `/api/deployments/:id` | Deployment status and logs |
+| POST | `/api/deployments/:id/retry` | Retry a failed deployment |
 
 ## Environment Variables
 
@@ -149,16 +175,21 @@ providentra/
 |----------|---------|-------------|
 | `DATABASE_URL` | `postgres://providentra:providentra@localhost:5432/providentra` | Platform database |
 | `REDIS_URL` | `redis://localhost:6379` | Redis for BullMQ |
-| `RUNTIME_DIR` | `./runtime` | Working directory for deployments |
-| `CADDY_CONFIG_DIR` | `./runtime/caddy` | Caddy site config output |
+| `RUNTIME_DIR` | `./runtime` | Working directory for cloned repos and Caddy snippets |
+| `CADDY_CONFIG_DIR` | `./runtime/caddy` | Per-project Caddy site config output |
 | `CADDYFILE_PATH` | `./Caddyfile` | Base Caddyfile the worker forwards to the executor on reload |
+| `DOCKER_EXECUTOR_URL` | `http://127.0.0.1:3100` | Docker executor HTTP API (used by worker / control plane) |
 | `CADDY_ADMIN_URL` | `http://caddy:2019` | Caddy admin API address the **executor** uses (internal Docker network; not published to the host) |
+| `EXECUTOR_PORT` | `3100` | Port when running the executor via `pnpm run executor` |
+| `DOCKER_SOCKET` | `/var/run/docker.sock` | Docker socket path used by the executor |
+| `RUNTIME_HOST_DIR` | (set by Compose) | Absolute host path for bind mounts when the executor runs inside Docker |
+| `NUXT_PORT` | `3000` | Control panel port |
 
 ## Prisma configuration
 
 Database connection for CLI commands (`migrate`, `studio`, etc.) is configured in `prisma.config.ts` at the project root. It loads `.env` via `dotenv` and passes `DATABASE_URL` to the Prisma CLI.
 
-The app runtime (`server/db/index.ts`, worker) reads `DATABASE_URL` from `process.env` directly — make sure `.env` exists (copy from `.env.example`).
+The app runtime (`lib/db.ts`, worker) reads `DATABASE_URL` from `process.env` directly — make sure `.env` exists (copy from `.env.example`).
 
 ## Troubleshooting
 
@@ -179,11 +210,27 @@ The app runtime (`server/db/index.ts`, worker) reads `DATABASE_URL` from `proces
 
 Copy the example env file: `cp .env.example .env`
 
+### Deployments stay queued
+
+Confirm the worker is running (`pnpm run worker`) and Redis is healthy (`docker compose ps`).
+
+### Executor / Docker errors during deploy
+
+Confirm the docker-executor container is up and healthy:
+
+```bash
+docker compose ps docker-executor
+curl -s http://127.0.0.1:3100/health
+```
+
+The executor needs access to `/var/run/docker.sock` and the `./runtime` volume.
+
 ## Deployed App Requirements
 
 - If the repo has a `Dockerfile`, it is used to build the app image
-- Without a `Dockerfile`, a fallback Node.js image runs `npm install && npm start`
-- The app should listen on the port configured in the project settings
+- Without a `Dockerfile`, a fallback `node:22-alpine` container runs `npm install && npm start` with the repo bind-mounted
+- The app should listen on the port configured in the project settings (`PORT` is injected)
+- When PostgreSQL is enabled (a `postgres` service under the project), `DATABASE_URL=postgresql://app:app@postgres:5432/app` is injected and the DB is reachable as hostname `postgres` on the project network
 - Add `*.localhost` entries to `/etc/hosts` for local domain routing
 
 ## Scripts
@@ -191,10 +238,12 @@ Copy the example env file: `cp .env.example .env`
 | Script | Description |
 |--------|-------------|
 | `pnpm run dev` | Start Nuxt dev server |
-| `pnpm run build` | Build for production |
-| `pnpm run worker` | Start deployment worker |
-| `pnpm run db:generate` | Create and apply a new Prisma migration (dev) |
-| `pnpm run db:migrate` | Apply pending migrations (production) |
+| `pnpm run build` | Generate Prisma client and build Nuxt for production |
+| `pnpm run preview` | Preview the production Nuxt build |
+| `pnpm run worker` | Start deployment / deletion worker |
+| `pnpm run executor` | Run the Docker executor locally (Compose is preferred) |
+| `pnpm run db:generate` | Generate Prisma client |
+| `pnpm run db:migrate` | Apply pending migrations |
 | `pnpm run db:push` | Push schema changes without migration files |
 | `pnpm run db:studio` | Open Prisma Studio |
 
@@ -207,7 +256,7 @@ Add entries to `/etc/hosts` for your project domains:
 127.0.0.1 api.localhost
 ```
 
-Caddy listens on port 80 and proxies to the app's configured port on the host.
+Caddy listens on port 80 and proxies to the app's configured port on the host (`host.docker.internal`). Automatic HTTPS is currently disabled (`auto_https off`).
 
 ## Future Enhancements
 
