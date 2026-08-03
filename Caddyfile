@@ -1,0 +1,12 @@
+{
+	admin 0.0.0.0:2019 {
+		origins caddy:2019 localhost:2019 127.0.0.1:2019
+	}
+	auto_https off
+}
+
+import /etc/caddy/sites/*.caddy
+
+:80 {
+	respond "Providentra — no sites configured yet" 200
+}

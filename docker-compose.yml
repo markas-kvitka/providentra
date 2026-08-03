@@ -1,0 +1,75 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: providentra-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: providentra
+      POSTGRES_PASSWORD: providentra
+      POSTGRES_DB: providentra
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U providentra']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: providentra-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: providentra-caddy
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./runtime/caddy:/etc/caddy/sites:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  docker-executor:
+    build:
+      context: .
+      dockerfile: executor/Dockerfile
+    image: providentra-docker-executor
+    container_name: providentra-docker-executor
+    restart: unless-stopped
+    ports:
+      - '3100:3100'
+    environment:
+      EXECUTOR_PORT: 3100
+      RUNTIME_DIR: /runtime
+      RUNTIME_HOST_DIR: ${PWD}/runtime
+      DOCKER_SOCKET: /var/run/docker.sock
+      CADDY_ADMIN_URL: http://caddy:2019
+    volumes:
+      - ./runtime:/runtime
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:3100/health']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 15s
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:
