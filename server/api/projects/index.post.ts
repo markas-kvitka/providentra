@@ -2,8 +2,10 @@ import { prisma } from '~~/lib/db'
 import { createProjectFromInput } from '~~/lib/project-facade'
 import { toSlug } from '~~/lib/slug'
 import { createProjectSchema } from '../../utils/validation'
+import { requireSession } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
+  const session = await requireSession(event)
   const body = await readBody(event)
   const parsed = createProjectSchema.safeParse(body)
 
@@ -29,7 +31,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const project = await createProjectFromInput(data, slug)
+  const project = await createProjectFromInput(data, slug, session.user.id)
 
   return {
     id: project.id,

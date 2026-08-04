@@ -1,6 +1,7 @@
 import { prisma } from '~~/lib/db'
 import { ACTIVE_DEPLOYMENT_STATUSES } from '~~/lib/deployment-status'
 import { retryDeployment } from '../../../queue'
+import { requireSession } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
@@ -8,8 +9,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Deployment ID is required' })
   }
 
-  const deployment = await prisma.deployment.findUnique({
-    where: { id },
+  const session = await requireSession(event)
+
+  const deployment = await prisma.deployment.findFirst({
+    where: {
+      id,
+      project: { userId: session.user.id },
+    },
   })
 
   if (!deployment) {

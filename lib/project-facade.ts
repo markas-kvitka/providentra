@@ -94,11 +94,12 @@ export function projectHasManagedVolumes(services: Array<Pick<Service, 'type'>>)
   })
 }
 
-export async function createProjectFromInput(data: CreateProjectInput, slug: string) {
+export async function createProjectFromInput(data: CreateProjectInput, slug: string, userId: string) {
   return prisma.project.create({
     data: {
       name: data.name,
       slug,
+      userId,
       services: {
         create: [
           {
