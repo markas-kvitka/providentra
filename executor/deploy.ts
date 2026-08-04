@@ -215,6 +215,45 @@ async function ensureManagedService(
   await waitForHealthy(container)
 }
 
+async function removeManagedService(
+  docker: Docker,
+  projectName: string,
+  recipe: ManagedServiceRecipe,
+  messages: string[],
+): Promise<void> {
+  const containerName = managedContainerName(projectName, recipe)
+  try {
+    const container = docker.getContainer(containerName)
+    await container.stop({ t: 10 }).catch(() => undefined)
+    await container.remove({ force: true })
+    messages.push(`Removed ${recipe.label} container ${containerName}`)
+  } catch {
+    // Container does not exist.
+  }
+
+  const volumeName = managedVolumeName(projectName, recipe)
+  if (!volumeName) return
+
+  try {
+    await docker.getVolume(volumeName).remove({ force: true })
+    messages.push(`Removed ${recipe.label} volume ${volumeName}`)
+  } catch {
+    // Volume does not exist.
+  }
+}
+
+async function pruneUnusedManagedServices(
+  docker: Docker,
+  projectName: string,
+  desiredTypes: ReadonlySet<ManagedServiceKey>,
+  messages: string[],
+): Promise<void> {
+  for (const recipe of listManagedRecipes()) {
+    if (desiredTypes.has(recipe.key)) continue
+    await removeManagedService(docker, projectName, recipe, messages)
+  }
+}
+
 async function createAppContainer(
   docker: Docker,
   slug: string,
@@ -308,6 +347,7 @@ export async function deployProject(config: DeployRequest): Promise<DeployResult
   const managedTypes = config.services
     .map((service) => service.type)
     .filter((type): type is ManagedServiceKey => isManagedServiceKey(type))
+  const desiredManagedTypes = new Set(managedTypes)
 
   await ensureNetwork(docker, names.network)
 
@@ -325,6 +365,8 @@ export async function deployProject(config: DeployRequest): Promise<DeployResult
       messages,
     )
   }
+
+  await pruneUnusedManagedServices(docker, names.projectName, desiredManagedTypes, messages)
 
   await removeContainerIfExists(docker, names.app)
   await createAppContainer(
