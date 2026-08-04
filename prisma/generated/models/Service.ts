@@ -20,70 +20,124 @@ export type ServiceModel = runtime.Types.Result.DefaultSelection<Prisma.$Service
 
 export type AggregateService = {
   _count: ServiceCountAggregateOutputType | null
+  _avg: ServiceAvgAggregateOutputType | null
+  _sum: ServiceSumAggregateOutputType | null
   _min: ServiceMinAggregateOutputType | null
   _max: ServiceMaxAggregateOutputType | null
+}
+
+export type ServiceAvgAggregateOutputType = {
+  port: number | null
+}
+
+export type ServiceSumAggregateOutputType = {
+  port: number | null
 }
 
 export type ServiceMinAggregateOutputType = {
   id: string | null
   projectId: string | null
   deploymentId: string | null
+  name: string | null
   type: $Enums.ServiceType | null
+  gitRepositoryUrl: string | null
+  branch: string | null
+  port: number | null
+  domain: string | null
   containerName: string | null
   status: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type ServiceMaxAggregateOutputType = {
   id: string | null
   projectId: string | null
   deploymentId: string | null
+  name: string | null
   type: $Enums.ServiceType | null
+  gitRepositoryUrl: string | null
+  branch: string | null
+  port: number | null
+  domain: string | null
   containerName: string | null
   status: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type ServiceCountAggregateOutputType = {
   id: number
   projectId: number
   deploymentId: number
+  name: number
   type: number
+  gitRepositoryUrl: number
+  branch: number
+  port: number
+  domain: number
   containerName: number
   status: number
   createdAt: number
+  updatedAt: number
   _all: number
 }
 
+
+export type ServiceAvgAggregateInputType = {
+  port?: true
+}
+
+export type ServiceSumAggregateInputType = {
+  port?: true
+}
 
 export type ServiceMinAggregateInputType = {
   id?: true
   projectId?: true
   deploymentId?: true
+  name?: true
   type?: true
+  gitRepositoryUrl?: true
+  branch?: true
+  port?: true
+  domain?: true
   containerName?: true
   status?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type ServiceMaxAggregateInputType = {
   id?: true
   projectId?: true
   deploymentId?: true
+  name?: true
   type?: true
+  gitRepositoryUrl?: true
+  branch?: true
+  port?: true
+  domain?: true
   containerName?: true
   status?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type ServiceCountAggregateInputType = {
   id?: true
   projectId?: true
   deploymentId?: true
+  name?: true
   type?: true
+  gitRepositoryUrl?: true
+  branch?: true
+  port?: true
+  domain?: true
   containerName?: true
   status?: true
   createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -125,6 +179,18 @@ export type ServiceAggregateArgs<ExtArgs extends runtime.Types.Extensions.Intern
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: ServiceAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: ServiceSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: ServiceMinAggregateInputType
@@ -155,6 +221,8 @@ export type ServiceGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   _count?: ServiceCountAggregateInputType | true
+  _avg?: ServiceAvgAggregateInputType
+  _sum?: ServiceSumAggregateInputType
   _min?: ServiceMinAggregateInputType
   _max?: ServiceMaxAggregateInputType
 }
@@ -163,11 +231,19 @@ export type ServiceGroupByOutputType = {
   id: string
   projectId: string
   deploymentId: string | null
+  name: string
   type: $Enums.ServiceType
+  gitRepositoryUrl: string | null
+  branch: string | null
+  port: number | null
+  domain: string | null
   containerName: string | null
   status: string | null
   createdAt: Date
+  updatedAt: Date
   _count: ServiceCountAggregateOutputType | null
+  _avg: ServiceAvgAggregateOutputType | null
+  _sum: ServiceSumAggregateOutputType | null
   _min: ServiceMinAggregateOutputType | null
   _max: ServiceMaxAggregateOutputType | null
 }
@@ -194,52 +270,82 @@ export type ServiceWhereInput = {
   id?: Prisma.StringFilter<"Service"> | string
   projectId?: Prisma.StringFilter<"Service"> | string
   deploymentId?: Prisma.StringNullableFilter<"Service"> | string | null
+  name?: Prisma.StringFilter<"Service"> | string
   type?: Prisma.EnumServiceTypeFilter<"Service"> | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.StringNullableFilter<"Service"> | string | null
+  branch?: Prisma.StringNullableFilter<"Service"> | string | null
+  port?: Prisma.IntNullableFilter<"Service"> | number | null
+  domain?: Prisma.StringNullableFilter<"Service"> | string | null
   containerName?: Prisma.StringNullableFilter<"Service"> | string | null
   status?: Prisma.StringNullableFilter<"Service"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Service"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Service"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   deployment?: Prisma.XOR<Prisma.DeploymentNullableScalarRelationFilter, Prisma.DeploymentWhereInput> | null
+  environmentVariables?: Prisma.EnvironmentVariableListRelationFilter
 }
 
 export type ServiceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   deploymentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  name?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  gitRepositoryUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  branch?: Prisma.SortOrderInput | Prisma.SortOrder
+  port?: Prisma.SortOrderInput | Prisma.SortOrder
+  domain?: Prisma.SortOrderInput | Prisma.SortOrder
   containerName?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   project?: Prisma.ProjectOrderByWithRelationInput
   deployment?: Prisma.DeploymentOrderByWithRelationInput
+  environmentVariables?: Prisma.EnvironmentVariableOrderByRelationAggregateInput
 }
 
 export type ServiceWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  projectId_name?: Prisma.ServiceProjectIdNameCompoundUniqueInput
   AND?: Prisma.ServiceWhereInput | Prisma.ServiceWhereInput[]
   OR?: Prisma.ServiceWhereInput[]
   NOT?: Prisma.ServiceWhereInput | Prisma.ServiceWhereInput[]
   projectId?: Prisma.StringFilter<"Service"> | string
   deploymentId?: Prisma.StringNullableFilter<"Service"> | string | null
+  name?: Prisma.StringFilter<"Service"> | string
   type?: Prisma.EnumServiceTypeFilter<"Service"> | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.StringNullableFilter<"Service"> | string | null
+  branch?: Prisma.StringNullableFilter<"Service"> | string | null
+  port?: Prisma.IntNullableFilter<"Service"> | number | null
+  domain?: Prisma.StringNullableFilter<"Service"> | string | null
   containerName?: Prisma.StringNullableFilter<"Service"> | string | null
   status?: Prisma.StringNullableFilter<"Service"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Service"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Service"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   deployment?: Prisma.XOR<Prisma.DeploymentNullableScalarRelationFilter, Prisma.DeploymentWhereInput> | null
-}, "id">
+  environmentVariables?: Prisma.EnvironmentVariableListRelationFilter
+}, "id" | "projectId_name">
 
 export type ServiceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   deploymentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  name?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  gitRepositoryUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  branch?: Prisma.SortOrderInput | Prisma.SortOrder
+  port?: Prisma.SortOrderInput | Prisma.SortOrder
+  domain?: Prisma.SortOrderInput | Prisma.SortOrder
   containerName?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.ServiceCountOrderByAggregateInput
+  _avg?: Prisma.ServiceAvgOrderByAggregateInput
   _max?: Prisma.ServiceMaxOrderByAggregateInput
   _min?: Prisma.ServiceMinOrderByAggregateInput
+  _sum?: Prisma.ServiceSumOrderByAggregateInput
 }
 
 export type ServiceScalarWhereWithAggregatesInput = {
@@ -249,78 +355,130 @@ export type ServiceScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Service"> | string
   projectId?: Prisma.StringWithAggregatesFilter<"Service"> | string
   deploymentId?: Prisma.StringNullableWithAggregatesFilter<"Service"> | string | null
+  name?: Prisma.StringWithAggregatesFilter<"Service"> | string
   type?: Prisma.EnumServiceTypeWithAggregatesFilter<"Service"> | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.StringNullableWithAggregatesFilter<"Service"> | string | null
+  branch?: Prisma.StringNullableWithAggregatesFilter<"Service"> | string | null
+  port?: Prisma.IntNullableWithAggregatesFilter<"Service"> | number | null
+  domain?: Prisma.StringNullableWithAggregatesFilter<"Service"> | string | null
   containerName?: Prisma.StringNullableWithAggregatesFilter<"Service"> | string | null
   status?: Prisma.StringNullableWithAggregatesFilter<"Service"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Service"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Service"> | Date | string
 }
 
 export type ServiceCreateInput = {
   id?: string
+  name: string
   type: $Enums.ServiceType
+  gitRepositoryUrl?: string | null
+  branch?: string | null
+  port?: number | null
+  domain?: string | null
   containerName?: string | null
   status?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutServicesInput
   deployment?: Prisma.DeploymentCreateNestedOneWithoutServicesInput
+  environmentVariables?: Prisma.EnvironmentVariableCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateInput = {
   id?: string
   projectId: string
   deploymentId?: string | null
+  name: string
   type: $Enums.ServiceType
+  gitRepositoryUrl?: string | null
+  branch?: string | null
+  port?: number | null
+  domain?: string | null
   containerName?: string | null
   status?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
+  environmentVariables?: Prisma.EnvironmentVariableUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  port?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   containerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutServicesNestedInput
   deployment?: Prisma.DeploymentUpdateOneWithoutServicesNestedInput
+  environmentVariables?: Prisma.EnvironmentVariableUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   deploymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  port?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   containerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  environmentVariables?: Prisma.EnvironmentVariableUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceCreateManyInput = {
   id?: string
   projectId: string
   deploymentId?: string | null
+  name: string
   type: $Enums.ServiceType
+  gitRepositoryUrl?: string | null
+  branch?: string | null
+  port?: number | null
+  domain?: string | null
   containerName?: string | null
   status?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type ServiceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  port?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   containerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ServiceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   deploymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  port?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   containerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ServiceListRelationFilter = {
@@ -333,34 +491,70 @@ export type ServiceOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type ServiceProjectIdNameCompoundUniqueInput = {
+  projectId: string
+  name: string
+}
+
 export type ServiceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   deploymentId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  gitRepositoryUrl?: Prisma.SortOrder
+  branch?: Prisma.SortOrder
+  port?: Prisma.SortOrder
+  domain?: Prisma.SortOrder
   containerName?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+}
+
+export type ServiceAvgOrderByAggregateInput = {
+  port?: Prisma.SortOrder
 }
 
 export type ServiceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   deploymentId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  gitRepositoryUrl?: Prisma.SortOrder
+  branch?: Prisma.SortOrder
+  port?: Prisma.SortOrder
+  domain?: Prisma.SortOrder
   containerName?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type ServiceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   deploymentId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  gitRepositoryUrl?: Prisma.SortOrder
+  branch?: Prisma.SortOrder
+  port?: Prisma.SortOrder
+  domain?: Prisma.SortOrder
   containerName?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+}
+
+export type ServiceSumOrderByAggregateInput = {
+  port?: Prisma.SortOrder
+}
+
+export type ServiceScalarRelationFilter = {
+  is?: Prisma.ServiceWhereInput
+  isNot?: Prisma.ServiceWhereInput
 }
 
 export type ServiceCreateNestedManyWithoutProjectInput = {
@@ -451,22 +645,58 @@ export type EnumServiceTypeFieldUpdateOperationsInput = {
   set?: $Enums.ServiceType
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type ServiceCreateNestedOneWithoutEnvironmentVariablesInput = {
+  create?: Prisma.XOR<Prisma.ServiceCreateWithoutEnvironmentVariablesInput, Prisma.ServiceUncheckedCreateWithoutEnvironmentVariablesInput>
+  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutEnvironmentVariablesInput
+  connect?: Prisma.ServiceWhereUniqueInput
+}
+
+export type ServiceUpdateOneRequiredWithoutEnvironmentVariablesNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceCreateWithoutEnvironmentVariablesInput, Prisma.ServiceUncheckedCreateWithoutEnvironmentVariablesInput>
+  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutEnvironmentVariablesInput
+  upsert?: Prisma.ServiceUpsertWithoutEnvironmentVariablesInput
+  connect?: Prisma.ServiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceUpdateToOneWithWhereWithoutEnvironmentVariablesInput, Prisma.ServiceUpdateWithoutEnvironmentVariablesInput>, Prisma.ServiceUncheckedUpdateWithoutEnvironmentVariablesInput>
+}
+
 export type ServiceCreateWithoutProjectInput = {
   id?: string
+  name: string
   type: $Enums.ServiceType
+  gitRepositoryUrl?: string | null
+  branch?: string | null
+  port?: number | null
+  domain?: string | null
   containerName?: string | null
   status?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   deployment?: Prisma.DeploymentCreateNestedOneWithoutServicesInput
+  environmentVariables?: Prisma.EnvironmentVariableCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateWithoutProjectInput = {
   id?: string
   deploymentId?: string | null
+  name: string
   type: $Enums.ServiceType
+  gitRepositoryUrl?: string | null
+  branch?: string | null
+  port?: number | null
+  domain?: string | null
   containerName?: string | null
   status?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
+  environmentVariables?: Prisma.EnvironmentVariableUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceCreateOrConnectWithoutProjectInput = {
@@ -502,28 +732,48 @@ export type ServiceScalarWhereInput = {
   id?: Prisma.StringFilter<"Service"> | string
   projectId?: Prisma.StringFilter<"Service"> | string
   deploymentId?: Prisma.StringNullableFilter<"Service"> | string | null
+  name?: Prisma.StringFilter<"Service"> | string
   type?: Prisma.EnumServiceTypeFilter<"Service"> | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.StringNullableFilter<"Service"> | string | null
+  branch?: Prisma.StringNullableFilter<"Service"> | string | null
+  port?: Prisma.IntNullableFilter<"Service"> | number | null
+  domain?: Prisma.StringNullableFilter<"Service"> | string | null
   containerName?: Prisma.StringNullableFilter<"Service"> | string | null
   status?: Prisma.StringNullableFilter<"Service"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Service"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Service"> | Date | string
 }
 
 export type ServiceCreateWithoutDeploymentInput = {
   id?: string
+  name: string
   type: $Enums.ServiceType
+  gitRepositoryUrl?: string | null
+  branch?: string | null
+  port?: number | null
+  domain?: string | null
   containerName?: string | null
   status?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutServicesInput
+  environmentVariables?: Prisma.EnvironmentVariableCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateWithoutDeploymentInput = {
   id?: string
   projectId: string
+  name: string
   type: $Enums.ServiceType
+  gitRepositoryUrl?: string | null
+  branch?: string | null
+  port?: number | null
+  domain?: string | null
   containerName?: string | null
   status?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
+  environmentVariables?: Prisma.EnvironmentVariableUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceCreateOrConnectWithoutDeploymentInput = {
@@ -552,100 +802,275 @@ export type ServiceUpdateManyWithWhereWithoutDeploymentInput = {
   data: Prisma.XOR<Prisma.ServiceUpdateManyMutationInput, Prisma.ServiceUncheckedUpdateManyWithoutDeploymentInput>
 }
 
-export type ServiceCreateManyProjectInput = {
+export type ServiceCreateWithoutEnvironmentVariablesInput = {
   id?: string
-  deploymentId?: string | null
+  name: string
   type: $Enums.ServiceType
+  gitRepositoryUrl?: string | null
+  branch?: string | null
+  port?: number | null
+  domain?: string | null
   containerName?: string | null
   status?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutServicesInput
+  deployment?: Prisma.DeploymentCreateNestedOneWithoutServicesInput
+}
+
+export type ServiceUncheckedCreateWithoutEnvironmentVariablesInput = {
+  id?: string
+  projectId: string
+  deploymentId?: string | null
+  name: string
+  type: $Enums.ServiceType
+  gitRepositoryUrl?: string | null
+  branch?: string | null
+  port?: number | null
+  domain?: string | null
+  containerName?: string | null
+  status?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ServiceCreateOrConnectWithoutEnvironmentVariablesInput = {
+  where: Prisma.ServiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServiceCreateWithoutEnvironmentVariablesInput, Prisma.ServiceUncheckedCreateWithoutEnvironmentVariablesInput>
+}
+
+export type ServiceUpsertWithoutEnvironmentVariablesInput = {
+  update: Prisma.XOR<Prisma.ServiceUpdateWithoutEnvironmentVariablesInput, Prisma.ServiceUncheckedUpdateWithoutEnvironmentVariablesInput>
+  create: Prisma.XOR<Prisma.ServiceCreateWithoutEnvironmentVariablesInput, Prisma.ServiceUncheckedCreateWithoutEnvironmentVariablesInput>
+  where?: Prisma.ServiceWhereInput
+}
+
+export type ServiceUpdateToOneWithWhereWithoutEnvironmentVariablesInput = {
+  where?: Prisma.ServiceWhereInput
+  data: Prisma.XOR<Prisma.ServiceUpdateWithoutEnvironmentVariablesInput, Prisma.ServiceUncheckedUpdateWithoutEnvironmentVariablesInput>
+}
+
+export type ServiceUpdateWithoutEnvironmentVariablesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  port?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutServicesNestedInput
+  deployment?: Prisma.DeploymentUpdateOneWithoutServicesNestedInput
+}
+
+export type ServiceUncheckedUpdateWithoutEnvironmentVariablesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  deploymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  port?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ServiceCreateManyProjectInput = {
+  id?: string
+  deploymentId?: string | null
+  name: string
+  type: $Enums.ServiceType
+  gitRepositoryUrl?: string | null
+  branch?: string | null
+  port?: number | null
+  domain?: string | null
+  containerName?: string | null
+  status?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type ServiceUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  port?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   containerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deployment?: Prisma.DeploymentUpdateOneWithoutServicesNestedInput
+  environmentVariables?: Prisma.EnvironmentVariableUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   deploymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  port?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   containerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  environmentVariables?: Prisma.EnvironmentVariableUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   deploymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  port?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   containerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ServiceCreateManyDeploymentInput = {
   id?: string
   projectId: string
+  name: string
   type: $Enums.ServiceType
+  gitRepositoryUrl?: string | null
+  branch?: string | null
+  port?: number | null
+  domain?: string | null
   containerName?: string | null
   status?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type ServiceUpdateWithoutDeploymentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  port?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   containerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutServicesNestedInput
+  environmentVariables?: Prisma.EnvironmentVariableUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateWithoutDeploymentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  port?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   containerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  environmentVariables?: Prisma.EnvironmentVariableUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateManyWithoutDeploymentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  gitRepositoryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  port?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   containerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type ServiceCountOutputType
+ */
+
+export type ServiceCountOutputType = {
+  environmentVariables: number
+}
+
+export type ServiceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  environmentVariables?: boolean | ServiceCountOutputTypeCountEnvironmentVariablesArgs
+}
+
+/**
+ * ServiceCountOutputType without action
+ */
+export type ServiceCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ServiceCountOutputType
+   */
+  select?: Prisma.ServiceCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ServiceCountOutputType without action
+ */
+export type ServiceCountOutputTypeCountEnvironmentVariablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EnvironmentVariableWhereInput
+}
 
 
 export type ServiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   projectId?: boolean
   deploymentId?: boolean
+  name?: boolean
   type?: boolean
+  gitRepositoryUrl?: boolean
+  branch?: boolean
+  port?: boolean
+  domain?: boolean
   containerName?: boolean
   status?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   deployment?: boolean | Prisma.Service$deploymentArgs<ExtArgs>
+  environmentVariables?: boolean | Prisma.Service$environmentVariablesArgs<ExtArgs>
+  _count?: boolean | Prisma.ServiceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["service"]>
 
 export type ServiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   projectId?: boolean
   deploymentId?: boolean
+  name?: boolean
   type?: boolean
+  gitRepositoryUrl?: boolean
+  branch?: boolean
+  port?: boolean
+  domain?: boolean
   containerName?: boolean
   status?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   deployment?: boolean | Prisma.Service$deploymentArgs<ExtArgs>
 }, ExtArgs["result"]["service"]>
@@ -654,10 +1079,16 @@ export type ServiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   projectId?: boolean
   deploymentId?: boolean
+  name?: boolean
   type?: boolean
+  gitRepositoryUrl?: boolean
+  branch?: boolean
+  port?: boolean
+  domain?: boolean
   containerName?: boolean
   status?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   deployment?: boolean | Prisma.Service$deploymentArgs<ExtArgs>
 }, ExtArgs["result"]["service"]>
@@ -666,16 +1097,24 @@ export type ServiceSelectScalar = {
   id?: boolean
   projectId?: boolean
   deploymentId?: boolean
+  name?: boolean
   type?: boolean
+  gitRepositoryUrl?: boolean
+  branch?: boolean
+  port?: boolean
+  domain?: boolean
   containerName?: boolean
   status?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type ServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "deploymentId" | "type" | "containerName" | "status" | "createdAt", ExtArgs["result"]["service"]>
+export type ServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "deploymentId" | "name" | "type" | "gitRepositoryUrl" | "branch" | "port" | "domain" | "containerName" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["service"]>
 export type ServiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   deployment?: boolean | Prisma.Service$deploymentArgs<ExtArgs>
+  environmentVariables?: boolean | Prisma.Service$environmentVariablesArgs<ExtArgs>
+  _count?: boolean | Prisma.ServiceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ServiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -691,15 +1130,22 @@ export type $ServicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     project: Prisma.$ProjectPayload<ExtArgs>
     deployment: Prisma.$DeploymentPayload<ExtArgs> | null
+    environmentVariables: Prisma.$EnvironmentVariablePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     projectId: string
     deploymentId: string | null
+    name: string
     type: $Enums.ServiceType
+    gitRepositoryUrl: string | null
+    branch: string | null
+    port: number | null
+    domain: string | null
     containerName: string | null
     status: string | null
     createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["service"]>
   composites: {}
 }
@@ -1096,6 +1542,7 @@ export interface Prisma__ServiceClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   deployment<T extends Prisma.Service$deploymentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$deploymentArgs<ExtArgs>>): Prisma.Prisma__DeploymentClient<runtime.Types.Result.GetResult<Prisma.$DeploymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  environmentVariables<T extends Prisma.Service$environmentVariablesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$environmentVariablesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EnvironmentVariablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1128,10 +1575,16 @@ export interface ServiceFieldRefs {
   readonly id: Prisma.FieldRef<"Service", 'String'>
   readonly projectId: Prisma.FieldRef<"Service", 'String'>
   readonly deploymentId: Prisma.FieldRef<"Service", 'String'>
+  readonly name: Prisma.FieldRef<"Service", 'String'>
   readonly type: Prisma.FieldRef<"Service", 'ServiceType'>
+  readonly gitRepositoryUrl: Prisma.FieldRef<"Service", 'String'>
+  readonly branch: Prisma.FieldRef<"Service", 'String'>
+  readonly port: Prisma.FieldRef<"Service", 'Int'>
+  readonly domain: Prisma.FieldRef<"Service", 'String'>
   readonly containerName: Prisma.FieldRef<"Service", 'String'>
   readonly status: Prisma.FieldRef<"Service", 'String'>
   readonly createdAt: Prisma.FieldRef<"Service", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Service", 'DateTime'>
 }
     
 
@@ -1549,6 +2002,30 @@ export type Service$deploymentArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   include?: Prisma.DeploymentInclude<ExtArgs> | null
   where?: Prisma.DeploymentWhereInput
+}
+
+/**
+ * Service.environmentVariables
+ */
+export type Service$environmentVariablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EnvironmentVariable
+   */
+  select?: Prisma.EnvironmentVariableSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EnvironmentVariable
+   */
+  omit?: Prisma.EnvironmentVariableOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EnvironmentVariableInclude<ExtArgs> | null
+  where?: Prisma.EnvironmentVariableWhereInput
+  orderBy?: Prisma.EnvironmentVariableOrderByWithRelationInput | Prisma.EnvironmentVariableOrderByWithRelationInput[]
+  cursor?: Prisma.EnvironmentVariableWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EnvironmentVariableScalarFieldEnum | Prisma.EnvironmentVariableScalarFieldEnum[]
 }
 
 /**

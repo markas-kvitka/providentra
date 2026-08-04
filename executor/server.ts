@@ -2,6 +2,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import { deployProject, getProjectLogs, teardownProject } from './deploy'
 import { reloadCaddy } from './caddy'
 import { port } from './config'
+import type { ManagedServiceKey } from '../lib/managed-services'
 
 interface JsonResponse {
   ok: boolean
@@ -69,10 +70,24 @@ export function startExecutorServer(): void {
       if (method === 'POST' && pathname === '/deploy') {
         const body = await readJsonBody<{
           slug: string
-          appPort: number
-          enablePostgres: boolean
-          environmentVariables: Array<{ key: string; value: string }>
+          services: Array<
+            | {
+                type: 'app'
+                name: string
+                port: number
+                environmentVariables: Array<{ key: string; value: string }>
+              }
+            | {
+                type: ManagedServiceKey
+                name: string
+              }
+          >
         }>(request)
+
+        if (!body.slug || !Array.isArray(body.services) || body.services.length === 0) {
+          sendJson(response, 400, { ok: false, error: 'Deploy requires slug and services' })
+          return
+        }
 
         const result = await deployProject(body)
         sendJson(response, 200, { ok: true, messages: result.messages })

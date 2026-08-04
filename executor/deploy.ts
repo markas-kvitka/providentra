@@ -3,15 +3,35 @@ import { rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import Docker from 'dockerode'
 import tar from 'tar-fs'
+import {
+  collectAppInjectEnv,
+  isManagedServiceKey,
+  listManagedRecipes,
+  managedContainerName,
+  managedVolumeName,
+  tryGetManagedRecipe,
+  type ManagedServiceKey,
+  type ManagedServiceRecipe,
+} from '../lib/managed-services'
 import { getComposeProjectName } from '../lib/slug'
 import { dockerSocket } from './config'
 import { getProjectPaths, getProjectRootDir } from './paths'
 
+export type DeployServiceSpec =
+  | {
+      type: 'app'
+      name: string
+      port: number
+      environmentVariables: Array<{ key: string; value: string }>
+    }
+  | {
+      type: ManagedServiceKey
+      name: string
+    }
+
 export interface DeployRequest {
   slug: string
-  appPort: number
-  enablePostgres: boolean
-  environmentVariables: Array<{ key: string; value: string }>
+  services: DeployServiceSpec[]
 }
 
 export interface DeployResult {
@@ -28,14 +48,12 @@ function getDocker(): Docker {
   return new Docker({ socketPath: dockerSocket })
 }
 
-function containerNames(slug: string) {
+function projectNames(slug: string) {
   const projectName = getComposeProjectName(slug)
   return {
     projectName,
     app: `${projectName}-app`,
-    postgres: `${projectName}-postgres`,
     network: `${projectName}-network`,
-    postgresVolume: `${projectName}-postgres-data`,
   }
 }
 
@@ -127,74 +145,121 @@ async function buildAppImage(
   })
 }
 
-async function ensurePostgres(
+async function ensureManagedService(
   docker: Docker,
   slug: string,
-  names: ReturnType<typeof containerNames>,
+  projectName: string,
   networkName: string,
+  recipe: ManagedServiceRecipe,
   messages: string[],
 ): Promise<void> {
   const labels = managedLabels(slug)
+  const containerName = managedContainerName(projectName, recipe)
 
   try {
-    const existing = await docker.getContainer(names.postgres).inspect()
+    const existing = await docker.getContainer(containerName).inspect()
     if (existing.State.Running) {
-      messages.push(`Postgres container ${names.postgres} already running`)
+      messages.push(`${recipe.label} container ${containerName} already running`)
       return
     }
   } catch {
-    // Create a new postgres container below.
+    // Create a new managed container below.
   }
 
-  await removeContainerIfExists(docker, names.postgres)
+  await removeContainerIfExists(docker, containerName)
 
-  try {
-    await docker.getVolume(names.postgresVolume).inspect()
-  } catch {
-    await docker.createVolume({
-      Name: names.postgresVolume,
-      Labels: labels,
-    })
+  const volumeName = managedVolumeName(projectName, recipe)
+  if (recipe.volume && volumeName) {
+    try {
+      await docker.getVolume(volumeName).inspect()
+    } catch {
+      await docker.createVolume({
+        Name: volumeName,
+        Labels: labels,
+      })
+    }
   }
 
   const container = await docker.createContainer({
-    name: names.postgres,
-    Image: 'postgres:16-alpine',
-    Env: [
-      'POSTGRES_USER=app',
-      'POSTGRES_PASSWORD=app',
-      'POSTGRES_DB=app',
-    ],
+    name: containerName,
+    Image: recipe.image,
+    Env: recipe.env,
     Labels: labels,
     HostConfig: {
       RestartPolicy: { Name: 'unless-stopped' },
-      Binds: [`${names.postgresVolume}:/var/lib/postgresql/data`],
+      ...(recipe.volume && volumeName
+        ? { Binds: [`${volumeName}:${recipe.volume.mountPath}`] }
+        : {}),
     },
     NetworkingConfig: {
       EndpointsConfig: {
         [networkName]: {
-          Aliases: ['postgres'],
+          Aliases: [recipe.networkAlias],
         },
       },
     },
-    Healthcheck: {
-      Test: ['CMD-SHELL', 'pg_isready -U app'],
-      Interval: 5_000_000_000,
-      Timeout: 5_000_000_000,
-      Retries: 5,
-    },
+    ...(recipe.healthcheck
+      ? {
+          Healthcheck: {
+            Test: recipe.healthcheck.test,
+            Interval: recipe.healthcheck.intervalNs,
+            Timeout: recipe.healthcheck.timeoutNs,
+            Retries: recipe.healthcheck.retries,
+          },
+        }
+      : {}),
   })
 
   await container.start()
-  messages.push(`Started postgres container ${names.postgres}`)
+  messages.push(`Started ${recipe.label} container ${containerName}`)
   await waitForHealthy(container)
+}
+
+async function removeManagedService(
+  docker: Docker,
+  projectName: string,
+  recipe: ManagedServiceRecipe,
+  messages: string[],
+): Promise<void> {
+  const containerName = managedContainerName(projectName, recipe)
+  try {
+    const container = docker.getContainer(containerName)
+    await container.stop({ t: 10 }).catch(() => undefined)
+    await container.remove({ force: true })
+    messages.push(`Removed ${recipe.label} container ${containerName}`)
+  } catch {
+    // Container does not exist.
+  }
+
+  const volumeName = managedVolumeName(projectName, recipe)
+  if (!volumeName) return
+
+  try {
+    await docker.getVolume(volumeName).remove({ force: true })
+    messages.push(`Removed ${recipe.label} volume ${volumeName}`)
+  } catch {
+    // Volume does not exist.
+  }
+}
+
+async function pruneUnusedManagedServices(
+  docker: Docker,
+  projectName: string,
+  desiredTypes: ReadonlySet<ManagedServiceKey>,
+  messages: string[],
+): Promise<void> {
+  for (const recipe of listManagedRecipes()) {
+    if (desiredTypes.has(recipe.key)) continue
+    await removeManagedService(docker, projectName, recipe, messages)
+  }
 }
 
 async function createAppContainer(
   docker: Docker,
   slug: string,
-  names: ReturnType<typeof containerNames>,
-  config: DeployRequest,
+  names: ReturnType<typeof projectNames>,
+  app: Extract<DeployServiceSpec, { type: 'app' }>,
+  managedTypes: ManagedServiceKey[],
   projectDir: string,
   hostProjectDir: string,
   networkName: string,
@@ -204,12 +269,12 @@ async function createAppContainer(
   const hasDockerfile = existsSync(join(projectDir, 'Dockerfile'))
 
   const environment = [
-    `PORT=${config.appPort}`,
-    ...(config.enablePostgres ? ['DATABASE_URL=postgresql://app:app@postgres:5432/app'] : []),
-    ...config.environmentVariables.map(({ key, value }) => `${key}=${value}`),
+    `PORT=${app.port}`,
+    ...collectAppInjectEnv(managedTypes),
+    ...app.environmentVariables.map(({ key, value }) => `${key}=${value}`),
   ]
 
-  const portBinding = { [`${config.appPort}/tcp`]: [{ HostPort: String(config.appPort) }] }
+  const portBinding = { [`${app.port}/tcp`]: [{ HostPort: String(app.port) }] }
 
   if (hasDockerfile) {
     const imageTag = `${names.projectName}-app:latest`
@@ -221,7 +286,7 @@ async function createAppContainer(
       Image: imageTag,
       Env: environment,
       Labels: labels,
-      ExposedPorts: { [`${config.appPort}/tcp`]: {} },
+      ExposedPorts: { [`${app.port}/tcp`]: {} },
       HostConfig: {
         RestartPolicy: { Name: 'unless-stopped' },
         PortBindings: portBinding,
@@ -245,7 +310,7 @@ async function createAppContainer(
     Cmd: ['sh', '-c', 'npm install && npm start'],
     Env: environment,
     Labels: labels,
-    ExposedPorts: { [`${config.appPort}/tcp`]: {} },
+    ExposedPorts: { [`${app.port}/tcp`]: {} },
     HostConfig: {
       RestartPolicy: { Name: 'unless-stopped' },
       Binds: [`${hostProjectDir}:/app`],
@@ -264,7 +329,7 @@ async function createAppContainer(
 
 export async function deployProject(config: DeployRequest): Promise<DeployResult> {
   const docker = getDocker()
-  const names = containerNames(config.slug)
+  const names = projectNames(config.slug)
   const { projectDir, hostProjectDir } = getProjectPaths(config.slug)
   const messages: string[] = []
 
@@ -272,18 +337,44 @@ export async function deployProject(config: DeployRequest): Promise<DeployResult
     throw new Error(`Project directory not found: ${projectDir}`)
   }
 
+  const app = config.services.find((service): service is Extract<DeployServiceSpec, { type: 'app' }> => {
+    return service.type === 'app'
+  })
+  if (!app) {
+    throw new Error('Deploy request must include an app service')
+  }
+
+  const managedTypes = config.services
+    .map((service) => service.type)
+    .filter((type): type is ManagedServiceKey => isManagedServiceKey(type))
+  const desiredManagedTypes = new Set(managedTypes)
+
   await ensureNetwork(docker, names.network)
 
-  if (config.enablePostgres) {
-    await ensurePostgres(docker, config.slug, names, names.network, messages)
+  for (const type of managedTypes) {
+    const recipe = tryGetManagedRecipe(type)
+    if (!recipe) {
+      throw new Error(`Unknown managed service type: ${type}`)
+    }
+    await ensureManagedService(
+      docker,
+      config.slug,
+      names.projectName,
+      names.network,
+      recipe,
+      messages,
+    )
   }
+
+  await pruneUnusedManagedServices(docker, names.projectName, desiredManagedTypes, messages)
 
   await removeContainerIfExists(docker, names.app)
   await createAppContainer(
     docker,
     config.slug,
     names,
-    config,
+    app,
+    managedTypes,
     projectDir,
     hostProjectDir,
     names.network,
@@ -298,10 +389,16 @@ export async function teardownProject(
   options?: { removeVolumes?: boolean; purgeFiles?: boolean },
 ): Promise<DeployResult> {
   const docker = getDocker()
-  const names = containerNames(slug)
+  const names = projectNames(slug)
   const messages: string[] = []
+  const managed = listManagedRecipes()
 
-  for (const name of [names.app, names.postgres]) {
+  const containerNames = [
+    names.app,
+    ...managed.map((recipe) => managedContainerName(names.projectName, recipe)),
+  ]
+
+  for (const name of containerNames) {
     try {
       const container = docker.getContainer(name)
       await container.stop({ t: 10 }).catch(() => undefined)
@@ -321,12 +418,16 @@ export async function teardownProject(
   }
 
   if (options?.removeVolumes) {
-    try {
-      const volume = docker.getVolume(names.postgresVolume)
-      await volume.remove({ force: true })
-      messages.push(`Removed volume ${names.postgresVolume}`)
-    } catch {
-      // Volume does not exist.
+    for (const recipe of managed) {
+      const volumeName = managedVolumeName(names.projectName, recipe)
+      if (!volumeName) continue
+      try {
+        const volume = docker.getVolume(volumeName)
+        await volume.remove({ force: true })
+        messages.push(`Removed volume ${volumeName}`)
+      } catch {
+        // Volume does not exist.
+      }
     }
   }
 
@@ -345,10 +446,15 @@ export async function teardownProject(
 
 export async function getProjectLogs(slug: string): Promise<string> {
   const docker = getDocker()
-  const names = containerNames(slug)
+  const names = projectNames(slug)
   const chunks: string[] = []
 
-  for (const name of [names.app, names.postgres]) {
+  const containerNames = [
+    names.app,
+    ...listManagedRecipes().map((recipe) => managedContainerName(names.projectName, recipe)),
+  ]
+
+  for (const name of containerNames) {
     try {
       const container = docker.getContainer(name)
       const logBuffer = await container.logs({

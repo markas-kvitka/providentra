@@ -28,12 +28,12 @@ export type Project = Prisma.ProjectModel
  */
 export type Deployment = Prisma.DeploymentModel
 /**
- * Model EnvironmentVariable
- * 
- */
-export type EnvironmentVariable = Prisma.EnvironmentVariableModel
-/**
  * Model Service
  * 
  */
 export type Service = Prisma.ServiceModel
+/**
+ * Model EnvironmentVariable
+ * 
+ */
+export type EnvironmentVariable = Prisma.EnvironmentVariableModel

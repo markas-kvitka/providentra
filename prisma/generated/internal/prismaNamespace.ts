@@ -386,8 +386,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   Project: 'Project',
   Deployment: 'Deployment',
-  EnvironmentVariable: 'EnvironmentVariable',
-  Service: 'Service'
+  Service: 'Service',
+  EnvironmentVariable: 'EnvironmentVariable'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -403,7 +403,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "project" | "deployment" | "environmentVariable" | "service"
+    modelProps: "project" | "deployment" | "service" | "environmentVariable"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -555,80 +555,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    EnvironmentVariable: {
-      payload: Prisma.$EnvironmentVariablePayload<ExtArgs>
-      fields: Prisma.EnvironmentVariableFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.EnvironmentVariableFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.EnvironmentVariableFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>
-        }
-        findFirst: {
-          args: Prisma.EnvironmentVariableFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.EnvironmentVariableFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>
-        }
-        findMany: {
-          args: Prisma.EnvironmentVariableFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>[]
-        }
-        create: {
-          args: Prisma.EnvironmentVariableCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>
-        }
-        createMany: {
-          args: Prisma.EnvironmentVariableCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.EnvironmentVariableCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>[]
-        }
-        delete: {
-          args: Prisma.EnvironmentVariableDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>
-        }
-        update: {
-          args: Prisma.EnvironmentVariableUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>
-        }
-        deleteMany: {
-          args: Prisma.EnvironmentVariableDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.EnvironmentVariableUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.EnvironmentVariableUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>[]
-        }
-        upsert: {
-          args: Prisma.EnvironmentVariableUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>
-        }
-        aggregate: {
-          args: Prisma.EnvironmentVariableAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateEnvironmentVariable>
-        }
-        groupBy: {
-          args: Prisma.EnvironmentVariableGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.EnvironmentVariableGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.EnvironmentVariableCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.EnvironmentVariableCountAggregateOutputType> | number
-        }
-      }
-    }
     Service: {
       payload: Prisma.$ServicePayload<ExtArgs>
       fields: Prisma.ServiceFieldRefs
@@ -703,6 +629,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    EnvironmentVariable: {
+      payload: Prisma.$EnvironmentVariablePayload<ExtArgs>
+      fields: Prisma.EnvironmentVariableFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EnvironmentVariableFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EnvironmentVariableFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>
+        }
+        findFirst: {
+          args: Prisma.EnvironmentVariableFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EnvironmentVariableFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>
+        }
+        findMany: {
+          args: Prisma.EnvironmentVariableFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>[]
+        }
+        create: {
+          args: Prisma.EnvironmentVariableCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>
+        }
+        createMany: {
+          args: Prisma.EnvironmentVariableCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EnvironmentVariableCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>[]
+        }
+        delete: {
+          args: Prisma.EnvironmentVariableDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>
+        }
+        update: {
+          args: Prisma.EnvironmentVariableUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>
+        }
+        deleteMany: {
+          args: Prisma.EnvironmentVariableDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EnvironmentVariableUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EnvironmentVariableUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>[]
+        }
+        upsert: {
+          args: Prisma.EnvironmentVariableUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EnvironmentVariablePayload>
+        }
+        aggregate: {
+          args: Prisma.EnvironmentVariableAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEnvironmentVariable>
+        }
+        groupBy: {
+          args: Prisma.EnvironmentVariableGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EnvironmentVariableGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EnvironmentVariableCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EnvironmentVariableCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -746,11 +746,6 @@ export const ProjectScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  gitRepositoryUrl: 'gitRepositoryUrl',
-  branch: 'branch',
-  appPort: 'appPort',
-  domain: 'domain',
-  enablePostgres: 'enablePostgres',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -774,27 +769,33 @@ export const DeploymentScalarFieldEnum = {
 export type DeploymentScalarFieldEnum = (typeof DeploymentScalarFieldEnum)[keyof typeof DeploymentScalarFieldEnum]
 
 
-export const EnvironmentVariableScalarFieldEnum = {
+export const ServiceScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
+  deploymentId: 'deploymentId',
+  name: 'name',
+  type: 'type',
+  gitRepositoryUrl: 'gitRepositoryUrl',
+  branch: 'branch',
+  port: 'port',
+  domain: 'domain',
+  containerName: 'containerName',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
+
+
+export const EnvironmentVariableScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
   key: 'key',
   value: 'value'
 } as const
 
 export type EnvironmentVariableScalarFieldEnum = (typeof EnvironmentVariableScalarFieldEnum)[keyof typeof EnvironmentVariableScalarFieldEnum]
-
-
-export const ServiceScalarFieldEnum = {
-  id: 'id',
-  projectId: 'projectId',
-  deploymentId: 'deploymentId',
-  type: 'type',
-  containerName: 'containerName',
-  status: 'status',
-  createdAt: 'createdAt'
-} as const
-
-export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -842,27 +843,6 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-    
-
-
-/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -901,6 +881,20 @@ export type EnumServiceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
  * Reference to a field of type 'ServiceType[]'
  */
 export type ListEnumServiceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -1029,8 +1023,8 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   project?: Prisma.ProjectOmit
   deployment?: Prisma.DeploymentOmit
-  environmentVariable?: Prisma.EnvironmentVariableOmit
   service?: Prisma.ServiceOmit
+  environmentVariable?: Prisma.EnvironmentVariableOmit
 }
 
 /* Types for Logging */

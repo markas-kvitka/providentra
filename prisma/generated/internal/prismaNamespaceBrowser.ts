@@ -53,8 +53,8 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Project: 'Project',
   Deployment: 'Deployment',
-  EnvironmentVariable: 'EnvironmentVariable',
-  Service: 'Service'
+  Service: 'Service',
+  EnvironmentVariable: 'EnvironmentVariable'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -77,11 +77,6 @@ export const ProjectScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  gitRepositoryUrl: 'gitRepositoryUrl',
-  branch: 'branch',
-  appPort: 'appPort',
-  domain: 'domain',
-  enablePostgres: 'enablePostgres',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -105,27 +100,33 @@ export const DeploymentScalarFieldEnum = {
 export type DeploymentScalarFieldEnum = (typeof DeploymentScalarFieldEnum)[keyof typeof DeploymentScalarFieldEnum]
 
 
-export const EnvironmentVariableScalarFieldEnum = {
+export const ServiceScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
+  deploymentId: 'deploymentId',
+  name: 'name',
+  type: 'type',
+  gitRepositoryUrl: 'gitRepositoryUrl',
+  branch: 'branch',
+  port: 'port',
+  domain: 'domain',
+  containerName: 'containerName',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
+
+
+export const EnvironmentVariableScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
   key: 'key',
   value: 'value'
 } as const
 
 export type EnvironmentVariableScalarFieldEnum = (typeof EnvironmentVariableScalarFieldEnum)[keyof typeof EnvironmentVariableScalarFieldEnum]
-
-
-export const ServiceScalarFieldEnum = {
-  id: 'id',
-  projectId: 'projectId',
-  deploymentId: 'deploymentId',
-  type: 'type',
-  containerName: 'containerName',
-  status: 'status',
-  createdAt: 'createdAt'
-} as const
-
-export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
 
 
 export const SortOrder = {

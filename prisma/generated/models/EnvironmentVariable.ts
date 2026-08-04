@@ -26,21 +26,21 @@ export type AggregateEnvironmentVariable = {
 
 export type EnvironmentVariableMinAggregateOutputType = {
   id: string | null
-  projectId: string | null
+  serviceId: string | null
   key: string | null
   value: string | null
 }
 
 export type EnvironmentVariableMaxAggregateOutputType = {
   id: string | null
-  projectId: string | null
+  serviceId: string | null
   key: string | null
   value: string | null
 }
 
 export type EnvironmentVariableCountAggregateOutputType = {
   id: number
-  projectId: number
+  serviceId: number
   key: number
   value: number
   _all: number
@@ -49,21 +49,21 @@ export type EnvironmentVariableCountAggregateOutputType = {
 
 export type EnvironmentVariableMinAggregateInputType = {
   id?: true
-  projectId?: true
+  serviceId?: true
   key?: true
   value?: true
 }
 
 export type EnvironmentVariableMaxAggregateInputType = {
   id?: true
-  projectId?: true
+  serviceId?: true
   key?: true
   value?: true
 }
 
 export type EnvironmentVariableCountAggregateInputType = {
   id?: true
-  projectId?: true
+  serviceId?: true
   key?: true
   value?: true
   _all?: true
@@ -143,7 +143,7 @@ export type EnvironmentVariableGroupByArgs<ExtArgs extends runtime.Types.Extensi
 
 export type EnvironmentVariableGroupByOutputType = {
   id: string
-  projectId: string
+  serviceId: string
   key: string
   value: string
   _count: EnvironmentVariableCountAggregateOutputType | null
@@ -171,18 +171,18 @@ export type EnvironmentVariableWhereInput = {
   OR?: Prisma.EnvironmentVariableWhereInput[]
   NOT?: Prisma.EnvironmentVariableWhereInput | Prisma.EnvironmentVariableWhereInput[]
   id?: Prisma.StringFilter<"EnvironmentVariable"> | string
-  projectId?: Prisma.StringFilter<"EnvironmentVariable"> | string
+  serviceId?: Prisma.StringFilter<"EnvironmentVariable"> | string
   key?: Prisma.StringFilter<"EnvironmentVariable"> | string
   value?: Prisma.StringFilter<"EnvironmentVariable"> | string
-  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
+  service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
 }
 
 export type EnvironmentVariableOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  projectId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   key?: Prisma.SortOrder
   value?: Prisma.SortOrder
-  project?: Prisma.ProjectOrderByWithRelationInput
+  service?: Prisma.ServiceOrderByWithRelationInput
 }
 
 export type EnvironmentVariableWhereUniqueInput = Prisma.AtLeast<{
@@ -190,15 +190,15 @@ export type EnvironmentVariableWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.EnvironmentVariableWhereInput | Prisma.EnvironmentVariableWhereInput[]
   OR?: Prisma.EnvironmentVariableWhereInput[]
   NOT?: Prisma.EnvironmentVariableWhereInput | Prisma.EnvironmentVariableWhereInput[]
-  projectId?: Prisma.StringFilter<"EnvironmentVariable"> | string
+  serviceId?: Prisma.StringFilter<"EnvironmentVariable"> | string
   key?: Prisma.StringFilter<"EnvironmentVariable"> | string
   value?: Prisma.StringFilter<"EnvironmentVariable"> | string
-  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
+  service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
 }, "id">
 
 export type EnvironmentVariableOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  projectId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   key?: Prisma.SortOrder
   value?: Prisma.SortOrder
   _count?: Prisma.EnvironmentVariableCountOrderByAggregateInput
@@ -211,7 +211,7 @@ export type EnvironmentVariableScalarWhereWithAggregatesInput = {
   OR?: Prisma.EnvironmentVariableScalarWhereWithAggregatesInput[]
   NOT?: Prisma.EnvironmentVariableScalarWhereWithAggregatesInput | Prisma.EnvironmentVariableScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"EnvironmentVariable"> | string
-  projectId?: Prisma.StringWithAggregatesFilter<"EnvironmentVariable"> | string
+  serviceId?: Prisma.StringWithAggregatesFilter<"EnvironmentVariable"> | string
   key?: Prisma.StringWithAggregatesFilter<"EnvironmentVariable"> | string
   value?: Prisma.StringWithAggregatesFilter<"EnvironmentVariable"> | string
 }
@@ -220,12 +220,12 @@ export type EnvironmentVariableCreateInput = {
   id?: string
   key: string
   value: string
-  project: Prisma.ProjectCreateNestedOneWithoutEnvironmentVariablesInput
+  service: Prisma.ServiceCreateNestedOneWithoutEnvironmentVariablesInput
 }
 
 export type EnvironmentVariableUncheckedCreateInput = {
   id?: string
-  projectId: string
+  serviceId: string
   key: string
   value: string
 }
@@ -234,19 +234,19 @@ export type EnvironmentVariableUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
-  project?: Prisma.ProjectUpdateOneRequiredWithoutEnvironmentVariablesNestedInput
+  service?: Prisma.ServiceUpdateOneRequiredWithoutEnvironmentVariablesNestedInput
 }
 
 export type EnvironmentVariableUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type EnvironmentVariableCreateManyInput = {
   id?: string
-  projectId: string
+  serviceId: string
   key: string
   value: string
 }
@@ -259,7 +259,7 @@ export type EnvironmentVariableUpdateManyMutationInput = {
 
 export type EnvironmentVariableUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -276,103 +276,103 @@ export type EnvironmentVariableOrderByRelationAggregateInput = {
 
 export type EnvironmentVariableCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  projectId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   key?: Prisma.SortOrder
   value?: Prisma.SortOrder
 }
 
 export type EnvironmentVariableMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  projectId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   key?: Prisma.SortOrder
   value?: Prisma.SortOrder
 }
 
 export type EnvironmentVariableMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  projectId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   key?: Prisma.SortOrder
   value?: Prisma.SortOrder
 }
 
-export type EnvironmentVariableCreateNestedManyWithoutProjectInput = {
-  create?: Prisma.XOR<Prisma.EnvironmentVariableCreateWithoutProjectInput, Prisma.EnvironmentVariableUncheckedCreateWithoutProjectInput> | Prisma.EnvironmentVariableCreateWithoutProjectInput[] | Prisma.EnvironmentVariableUncheckedCreateWithoutProjectInput[]
-  connectOrCreate?: Prisma.EnvironmentVariableCreateOrConnectWithoutProjectInput | Prisma.EnvironmentVariableCreateOrConnectWithoutProjectInput[]
-  createMany?: Prisma.EnvironmentVariableCreateManyProjectInputEnvelope
+export type EnvironmentVariableCreateNestedManyWithoutServiceInput = {
+  create?: Prisma.XOR<Prisma.EnvironmentVariableCreateWithoutServiceInput, Prisma.EnvironmentVariableUncheckedCreateWithoutServiceInput> | Prisma.EnvironmentVariableCreateWithoutServiceInput[] | Prisma.EnvironmentVariableUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.EnvironmentVariableCreateOrConnectWithoutServiceInput | Prisma.EnvironmentVariableCreateOrConnectWithoutServiceInput[]
+  createMany?: Prisma.EnvironmentVariableCreateManyServiceInputEnvelope
   connect?: Prisma.EnvironmentVariableWhereUniqueInput | Prisma.EnvironmentVariableWhereUniqueInput[]
 }
 
-export type EnvironmentVariableUncheckedCreateNestedManyWithoutProjectInput = {
-  create?: Prisma.XOR<Prisma.EnvironmentVariableCreateWithoutProjectInput, Prisma.EnvironmentVariableUncheckedCreateWithoutProjectInput> | Prisma.EnvironmentVariableCreateWithoutProjectInput[] | Prisma.EnvironmentVariableUncheckedCreateWithoutProjectInput[]
-  connectOrCreate?: Prisma.EnvironmentVariableCreateOrConnectWithoutProjectInput | Prisma.EnvironmentVariableCreateOrConnectWithoutProjectInput[]
-  createMany?: Prisma.EnvironmentVariableCreateManyProjectInputEnvelope
+export type EnvironmentVariableUncheckedCreateNestedManyWithoutServiceInput = {
+  create?: Prisma.XOR<Prisma.EnvironmentVariableCreateWithoutServiceInput, Prisma.EnvironmentVariableUncheckedCreateWithoutServiceInput> | Prisma.EnvironmentVariableCreateWithoutServiceInput[] | Prisma.EnvironmentVariableUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.EnvironmentVariableCreateOrConnectWithoutServiceInput | Prisma.EnvironmentVariableCreateOrConnectWithoutServiceInput[]
+  createMany?: Prisma.EnvironmentVariableCreateManyServiceInputEnvelope
   connect?: Prisma.EnvironmentVariableWhereUniqueInput | Prisma.EnvironmentVariableWhereUniqueInput[]
 }
 
-export type EnvironmentVariableUpdateManyWithoutProjectNestedInput = {
-  create?: Prisma.XOR<Prisma.EnvironmentVariableCreateWithoutProjectInput, Prisma.EnvironmentVariableUncheckedCreateWithoutProjectInput> | Prisma.EnvironmentVariableCreateWithoutProjectInput[] | Prisma.EnvironmentVariableUncheckedCreateWithoutProjectInput[]
-  connectOrCreate?: Prisma.EnvironmentVariableCreateOrConnectWithoutProjectInput | Prisma.EnvironmentVariableCreateOrConnectWithoutProjectInput[]
-  upsert?: Prisma.EnvironmentVariableUpsertWithWhereUniqueWithoutProjectInput | Prisma.EnvironmentVariableUpsertWithWhereUniqueWithoutProjectInput[]
-  createMany?: Prisma.EnvironmentVariableCreateManyProjectInputEnvelope
+export type EnvironmentVariableUpdateManyWithoutServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.EnvironmentVariableCreateWithoutServiceInput, Prisma.EnvironmentVariableUncheckedCreateWithoutServiceInput> | Prisma.EnvironmentVariableCreateWithoutServiceInput[] | Prisma.EnvironmentVariableUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.EnvironmentVariableCreateOrConnectWithoutServiceInput | Prisma.EnvironmentVariableCreateOrConnectWithoutServiceInput[]
+  upsert?: Prisma.EnvironmentVariableUpsertWithWhereUniqueWithoutServiceInput | Prisma.EnvironmentVariableUpsertWithWhereUniqueWithoutServiceInput[]
+  createMany?: Prisma.EnvironmentVariableCreateManyServiceInputEnvelope
   set?: Prisma.EnvironmentVariableWhereUniqueInput | Prisma.EnvironmentVariableWhereUniqueInput[]
   disconnect?: Prisma.EnvironmentVariableWhereUniqueInput | Prisma.EnvironmentVariableWhereUniqueInput[]
   delete?: Prisma.EnvironmentVariableWhereUniqueInput | Prisma.EnvironmentVariableWhereUniqueInput[]
   connect?: Prisma.EnvironmentVariableWhereUniqueInput | Prisma.EnvironmentVariableWhereUniqueInput[]
-  update?: Prisma.EnvironmentVariableUpdateWithWhereUniqueWithoutProjectInput | Prisma.EnvironmentVariableUpdateWithWhereUniqueWithoutProjectInput[]
-  updateMany?: Prisma.EnvironmentVariableUpdateManyWithWhereWithoutProjectInput | Prisma.EnvironmentVariableUpdateManyWithWhereWithoutProjectInput[]
+  update?: Prisma.EnvironmentVariableUpdateWithWhereUniqueWithoutServiceInput | Prisma.EnvironmentVariableUpdateWithWhereUniqueWithoutServiceInput[]
+  updateMany?: Prisma.EnvironmentVariableUpdateManyWithWhereWithoutServiceInput | Prisma.EnvironmentVariableUpdateManyWithWhereWithoutServiceInput[]
   deleteMany?: Prisma.EnvironmentVariableScalarWhereInput | Prisma.EnvironmentVariableScalarWhereInput[]
 }
 
-export type EnvironmentVariableUncheckedUpdateManyWithoutProjectNestedInput = {
-  create?: Prisma.XOR<Prisma.EnvironmentVariableCreateWithoutProjectInput, Prisma.EnvironmentVariableUncheckedCreateWithoutProjectInput> | Prisma.EnvironmentVariableCreateWithoutProjectInput[] | Prisma.EnvironmentVariableUncheckedCreateWithoutProjectInput[]
-  connectOrCreate?: Prisma.EnvironmentVariableCreateOrConnectWithoutProjectInput | Prisma.EnvironmentVariableCreateOrConnectWithoutProjectInput[]
-  upsert?: Prisma.EnvironmentVariableUpsertWithWhereUniqueWithoutProjectInput | Prisma.EnvironmentVariableUpsertWithWhereUniqueWithoutProjectInput[]
-  createMany?: Prisma.EnvironmentVariableCreateManyProjectInputEnvelope
+export type EnvironmentVariableUncheckedUpdateManyWithoutServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.EnvironmentVariableCreateWithoutServiceInput, Prisma.EnvironmentVariableUncheckedCreateWithoutServiceInput> | Prisma.EnvironmentVariableCreateWithoutServiceInput[] | Prisma.EnvironmentVariableUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.EnvironmentVariableCreateOrConnectWithoutServiceInput | Prisma.EnvironmentVariableCreateOrConnectWithoutServiceInput[]
+  upsert?: Prisma.EnvironmentVariableUpsertWithWhereUniqueWithoutServiceInput | Prisma.EnvironmentVariableUpsertWithWhereUniqueWithoutServiceInput[]
+  createMany?: Prisma.EnvironmentVariableCreateManyServiceInputEnvelope
   set?: Prisma.EnvironmentVariableWhereUniqueInput | Prisma.EnvironmentVariableWhereUniqueInput[]
   disconnect?: Prisma.EnvironmentVariableWhereUniqueInput | Prisma.EnvironmentVariableWhereUniqueInput[]
   delete?: Prisma.EnvironmentVariableWhereUniqueInput | Prisma.EnvironmentVariableWhereUniqueInput[]
   connect?: Prisma.EnvironmentVariableWhereUniqueInput | Prisma.EnvironmentVariableWhereUniqueInput[]
-  update?: Prisma.EnvironmentVariableUpdateWithWhereUniqueWithoutProjectInput | Prisma.EnvironmentVariableUpdateWithWhereUniqueWithoutProjectInput[]
-  updateMany?: Prisma.EnvironmentVariableUpdateManyWithWhereWithoutProjectInput | Prisma.EnvironmentVariableUpdateManyWithWhereWithoutProjectInput[]
+  update?: Prisma.EnvironmentVariableUpdateWithWhereUniqueWithoutServiceInput | Prisma.EnvironmentVariableUpdateWithWhereUniqueWithoutServiceInput[]
+  updateMany?: Prisma.EnvironmentVariableUpdateManyWithWhereWithoutServiceInput | Prisma.EnvironmentVariableUpdateManyWithWhereWithoutServiceInput[]
   deleteMany?: Prisma.EnvironmentVariableScalarWhereInput | Prisma.EnvironmentVariableScalarWhereInput[]
 }
 
-export type EnvironmentVariableCreateWithoutProjectInput = {
+export type EnvironmentVariableCreateWithoutServiceInput = {
   id?: string
   key: string
   value: string
 }
 
-export type EnvironmentVariableUncheckedCreateWithoutProjectInput = {
+export type EnvironmentVariableUncheckedCreateWithoutServiceInput = {
   id?: string
   key: string
   value: string
 }
 
-export type EnvironmentVariableCreateOrConnectWithoutProjectInput = {
+export type EnvironmentVariableCreateOrConnectWithoutServiceInput = {
   where: Prisma.EnvironmentVariableWhereUniqueInput
-  create: Prisma.XOR<Prisma.EnvironmentVariableCreateWithoutProjectInput, Prisma.EnvironmentVariableUncheckedCreateWithoutProjectInput>
+  create: Prisma.XOR<Prisma.EnvironmentVariableCreateWithoutServiceInput, Prisma.EnvironmentVariableUncheckedCreateWithoutServiceInput>
 }
 
-export type EnvironmentVariableCreateManyProjectInputEnvelope = {
-  data: Prisma.EnvironmentVariableCreateManyProjectInput | Prisma.EnvironmentVariableCreateManyProjectInput[]
+export type EnvironmentVariableCreateManyServiceInputEnvelope = {
+  data: Prisma.EnvironmentVariableCreateManyServiceInput | Prisma.EnvironmentVariableCreateManyServiceInput[]
   skipDuplicates?: boolean
 }
 
-export type EnvironmentVariableUpsertWithWhereUniqueWithoutProjectInput = {
+export type EnvironmentVariableUpsertWithWhereUniqueWithoutServiceInput = {
   where: Prisma.EnvironmentVariableWhereUniqueInput
-  update: Prisma.XOR<Prisma.EnvironmentVariableUpdateWithoutProjectInput, Prisma.EnvironmentVariableUncheckedUpdateWithoutProjectInput>
-  create: Prisma.XOR<Prisma.EnvironmentVariableCreateWithoutProjectInput, Prisma.EnvironmentVariableUncheckedCreateWithoutProjectInput>
+  update: Prisma.XOR<Prisma.EnvironmentVariableUpdateWithoutServiceInput, Prisma.EnvironmentVariableUncheckedUpdateWithoutServiceInput>
+  create: Prisma.XOR<Prisma.EnvironmentVariableCreateWithoutServiceInput, Prisma.EnvironmentVariableUncheckedCreateWithoutServiceInput>
 }
 
-export type EnvironmentVariableUpdateWithWhereUniqueWithoutProjectInput = {
+export type EnvironmentVariableUpdateWithWhereUniqueWithoutServiceInput = {
   where: Prisma.EnvironmentVariableWhereUniqueInput
-  data: Prisma.XOR<Prisma.EnvironmentVariableUpdateWithoutProjectInput, Prisma.EnvironmentVariableUncheckedUpdateWithoutProjectInput>
+  data: Prisma.XOR<Prisma.EnvironmentVariableUpdateWithoutServiceInput, Prisma.EnvironmentVariableUncheckedUpdateWithoutServiceInput>
 }
 
-export type EnvironmentVariableUpdateManyWithWhereWithoutProjectInput = {
+export type EnvironmentVariableUpdateManyWithWhereWithoutServiceInput = {
   where: Prisma.EnvironmentVariableScalarWhereInput
-  data: Prisma.XOR<Prisma.EnvironmentVariableUpdateManyMutationInput, Prisma.EnvironmentVariableUncheckedUpdateManyWithoutProjectInput>
+  data: Prisma.XOR<Prisma.EnvironmentVariableUpdateManyMutationInput, Prisma.EnvironmentVariableUncheckedUpdateManyWithoutServiceInput>
 }
 
 export type EnvironmentVariableScalarWhereInput = {
@@ -380,30 +380,30 @@ export type EnvironmentVariableScalarWhereInput = {
   OR?: Prisma.EnvironmentVariableScalarWhereInput[]
   NOT?: Prisma.EnvironmentVariableScalarWhereInput | Prisma.EnvironmentVariableScalarWhereInput[]
   id?: Prisma.StringFilter<"EnvironmentVariable"> | string
-  projectId?: Prisma.StringFilter<"EnvironmentVariable"> | string
+  serviceId?: Prisma.StringFilter<"EnvironmentVariable"> | string
   key?: Prisma.StringFilter<"EnvironmentVariable"> | string
   value?: Prisma.StringFilter<"EnvironmentVariable"> | string
 }
 
-export type EnvironmentVariableCreateManyProjectInput = {
+export type EnvironmentVariableCreateManyServiceInput = {
   id?: string
   key: string
   value: string
 }
 
-export type EnvironmentVariableUpdateWithoutProjectInput = {
+export type EnvironmentVariableUpdateWithoutServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
-export type EnvironmentVariableUncheckedUpdateWithoutProjectInput = {
+export type EnvironmentVariableUncheckedUpdateWithoutServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
-export type EnvironmentVariableUncheckedUpdateManyWithoutProjectInput = {
+export type EnvironmentVariableUncheckedUpdateManyWithoutServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
@@ -413,54 +413,54 @@ export type EnvironmentVariableUncheckedUpdateManyWithoutProjectInput = {
 
 export type EnvironmentVariableSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  projectId?: boolean
+  serviceId?: boolean
   key?: boolean
   value?: boolean
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["environmentVariable"]>
 
 export type EnvironmentVariableSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  projectId?: boolean
+  serviceId?: boolean
   key?: boolean
   value?: boolean
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["environmentVariable"]>
 
 export type EnvironmentVariableSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  projectId?: boolean
+  serviceId?: boolean
   key?: boolean
   value?: boolean
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["environmentVariable"]>
 
 export type EnvironmentVariableSelectScalar = {
   id?: boolean
-  projectId?: boolean
+  serviceId?: boolean
   key?: boolean
   value?: boolean
 }
 
-export type EnvironmentVariableOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "key" | "value", ExtArgs["result"]["environmentVariable"]>
+export type EnvironmentVariableOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "serviceId" | "key" | "value", ExtArgs["result"]["environmentVariable"]>
 export type EnvironmentVariableInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }
 export type EnvironmentVariableIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }
 export type EnvironmentVariableIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }
 
 export type $EnvironmentVariablePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "EnvironmentVariable"
   objects: {
-    project: Prisma.$ProjectPayload<ExtArgs>
+    service: Prisma.$ServicePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    projectId: string
+    serviceId: string
     key: string
     value: string
   }, ExtArgs["result"]["environmentVariable"]>
@@ -857,7 +857,7 @@ readonly fields: EnvironmentVariableFieldRefs;
  */
 export interface Prisma__EnvironmentVariableClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  service<T extends Prisma.ServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -888,7 +888,7 @@ export interface Prisma__EnvironmentVariableClient<T, Null = never, ExtArgs exte
  */
 export interface EnvironmentVariableFieldRefs {
   readonly id: Prisma.FieldRef<"EnvironmentVariable", 'String'>
-  readonly projectId: Prisma.FieldRef<"EnvironmentVariable", 'String'>
+  readonly serviceId: Prisma.FieldRef<"EnvironmentVariable", 'String'>
   readonly key: Prisma.FieldRef<"EnvironmentVariable", 'String'>
   readonly value: Prisma.FieldRef<"EnvironmentVariable", 'String'>
 }
