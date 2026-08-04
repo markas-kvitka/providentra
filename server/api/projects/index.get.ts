@@ -1,5 +1,5 @@
 import { prisma } from '~~/lib/db'
-import { getPrimaryAppService } from '~~/lib/project-facade'
+import { findPrimaryAppService } from '~~/lib/project-facade'
 import type { ProjectSummary } from '../../../shared/types'
 
 export default defineEventHandler(async () => {
@@ -14,9 +14,13 @@ export default defineEventHandler(async () => {
     },
   })
 
-  const result: ProjectSummary[] = allProjects.map((p) => {
-    const app = getPrimaryAppService(p.services)
-    return {
+  const result: ProjectSummary[] = allProjects.flatMap((p) => {
+    const app = findPrimaryAppService(p.services)
+    if (!app) {
+      return []
+    }
+
+    return [{
       id: p.id,
       name: p.name,
       slug: p.slug,
@@ -24,7 +28,7 @@ export default defineEventHandler(async () => {
       branch: app.branch ?? 'main',
       latestDeploymentStatus: p.deployments[0]?.status ?? null,
       createdAt: p.createdAt.toISOString(),
-    }
+    }]
   })
 
   return result

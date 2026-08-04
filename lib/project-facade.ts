@@ -28,13 +28,21 @@ export function listProjectServices(projectId: string) {
   })
 }
 
+export function findPrimaryAppService<
+  T extends Pick<Service, 'id' | 'name' | 'type' | 'gitRepositoryUrl' | 'branch' | 'port' | 'domain'> & {
+    environmentVariables?: EnvironmentVariableInput[]
+  },
+>(services: T[]): T | undefined {
+  return services.find((s) => s.type === 'app' && s.name === PRIMARY_APP_SERVICE_NAME)
+    ?? services.find((s) => s.type === 'app')
+}
+
 export function getPrimaryAppService<
   T extends Pick<Service, 'id' | 'name' | 'type' | 'gitRepositoryUrl' | 'branch' | 'port' | 'domain'> & {
     environmentVariables?: EnvironmentVariableInput[]
   },
 >(services: T[]): T {
-  const app = services.find((s) => s.type === 'app' && s.name === PRIMARY_APP_SERVICE_NAME)
-    ?? services.find((s) => s.type === 'app')
+  const app = findPrimaryAppService(services)
 
   if (!app) {
     throw new Error('Project has no app service')
