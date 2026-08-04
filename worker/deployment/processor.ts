@@ -144,7 +144,7 @@ export async function processDeployment(data: DeploymentJobData): Promise<void> 
     if (upResult.stderr) await appendLog(deploymentId, upResult.stderr)
 
     await appendLog(deploymentId, `Configuring Caddy reverse proxy for ${app.domain}`)
-    await caddyAdapter.updateProxyConfig(app.domain, app.port)
+    await caddyAdapter.updateProxyConfig(project.slug, app.domain, app.port)
 
     for (const service of project.services) {
       await prisma.service.update({
@@ -171,7 +171,7 @@ export async function processDeployment(data: DeploymentJobData): Promise<void> 
       await deploymentAdapter.down({
         removeVolumes: projectHasManagedVolumes(project.services),
       })
-      await caddyAdapter.removeProxyConfig(app.domain)
+      await caddyAdapter.removeProxyConfig(project.slug, app.domain)
 
       for (const service of project.services) {
         await prisma.service.update({

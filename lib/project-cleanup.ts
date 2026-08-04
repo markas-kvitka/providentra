@@ -42,10 +42,10 @@ export async function cleanupProjectResources(
   }
 
   try {
-    await caddyAdapter.removeProxyConfig(project.domain)
+    await caddyAdapter.removeProxyConfig(project.slug, project.domain)
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    console.warn(`Caddy config removal failed for ${project.domain}: ${message}`)
+    console.warn(`Caddy config removal failed for ${project.slug}: ${message}`)
   }
 
   if (!filesPurged && existsSync(projectDir)) {
