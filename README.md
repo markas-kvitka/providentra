@@ -268,6 +268,10 @@ Confirm `ENV_ENCRYPTION_KEY` is set and is a base64-encoded 32-byte key (`openss
 | `pnpm run db:push` | Push schema changes without migration files |
 | `pnpm run db:studio` | Open Prisma Studio |
 | `pnpm run typecheck` | Generate Nuxt types and run TypeScript checks |
+| `pnpm test` | Run unit and integration tests (Vitest) |
+| `pnpm test:watch` | Run Vitest in watch mode |
+
+Integration tests need a migrated Postgres (`pnpm run db:migrate`) and the same env vars as local development (`DATABASE_URL`, `ENV_ENCRYPTION_KEY`). CI runs migrations before `pnpm test`.
 
 ## Local Domain Setup
 

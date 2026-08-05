@@ -1,7 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
-import { timingSafeEqual } from 'node:crypto'
 import { deployProject, getProjectLogs, teardownProject } from './deploy'
 import { reloadCaddy } from './caddy'
+import { isAuthorized } from './auth'
 import { executorToken, port } from './config'
 import type { ManagedServiceKey } from '../lib/managed-services'
 
@@ -44,29 +44,6 @@ function getSlugFromPath(pathname: string): string | null {
   return match?.[1] ? decodeURIComponent(match[1]) : null
 }
 
-function tokensEqual(expected: string, provided: string): boolean {
-  const expectedBuf = Buffer.from(expected)
-  const providedBuf = Buffer.from(provided)
-  if (expectedBuf.length !== providedBuf.length) {
-    return false
-  }
-  return timingSafeEqual(expectedBuf, providedBuf)
-}
-
-function isAuthorized(request: IncomingMessage): boolean {
-  if (!executorToken) {
-    return false
-  }
-
-  const header = request.headers.authorization
-  if (!header?.startsWith('Bearer ')) {
-    return false
-  }
-
-  const provided = header.slice('Bearer '.length).trim()
-  return tokensEqual(executorToken, provided)
-}
-
 export function startExecutorServer(): void {
   if (!executorToken) {
     console.error('EXECUTOR_TOKEN is required. Set it in .env (see .env.example).')
@@ -84,7 +61,7 @@ export function startExecutorServer(): void {
         return
       }
 
-      if (!isAuthorized(request)) {
+      if (!isAuthorized(request, executorToken)) {
         sendJson(response, 401, { ok: false, error: 'Unauthorized' })
         return
       }
