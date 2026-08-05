@@ -25,14 +25,14 @@ A self-hosted "Vercel-lite" deployment platform. Define projects via a Nuxt cont
                           └──────────────┘   └──────────────────┘
 ```
 
-- **Nuxt app** — control panel UI and REST API
+- **Nuxt app** — control panel UI and REST API (Better Auth email/password sessions)
 - **Worker** — clones/pulls repos, calls the Docker executor, writes Caddy site configs
 - **BullMQ + Redis** — job queue between API and worker (deploy + project deletion)
-- **PostgreSQL** — projects, deployments, and first-class services (app, postgres, …)
+- **PostgreSQL** — users/sessions (Better Auth), projects, deployments, and first-class services (app, postgres, …)
 - **Docker executor** — privileged HTTP service with access to the Docker socket; builds/runs the project's service set via Dockerode
 - **Caddy** — routes domains to deployed app ports on the host
 
-A **Project** is a namespace. Under the hood it owns **Services** (today: one `web` app and an optional `postgres`). The control panel UI still presents a simple single-app form with a PostgreSQL checkbox; the API maps that onto the service model.
+A **Project** is a namespace owned by a **User**. Under the hood it owns **Services** (today: one `web` app and an optional `postgres`). The control panel UI still presents a simple single-app form with a PostgreSQL checkbox; the API maps that onto the service model. All project and deployment APIs are scoped to the signed-in user.
 
 Managed add-ons (Postgres today; Redis recipe ready) are defined in [`lib/managed-services.ts`](lib/managed-services.ts). The executor looks up image, volumes, healthchecks, and app env injection from that catalog — not hardcoded per service in deploy logic.
 
@@ -61,6 +61,8 @@ This starts PostgreSQL, Redis, Caddy, and the Docker executor (`http://127.0.0.1
 cp .env.example .env
 ```
 
+Set `BETTER_AUTH_SECRET` to a long random string (at least 32 characters), e.g. `openssl rand -base64 32`. Keep `BETTER_AUTH_URL=http://localhost:3000` for local development.
+
 ### 3. Install dependencies
 
 ```bash
@@ -73,13 +75,15 @@ pnpm install
 pnpm run db:migrate
 ```
 
+> **Note:** The Better Auth migration clears existing projects so each project can require a `userId`. For a clean local reset you can also run `docker compose down -v` and migrate again.
+
 ### 5. Start the control panel
 
 ```bash
 pnpm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). Register an account (or sign in), then manage projects.
 
 ### 6. Start the deployment worker
 
@@ -93,7 +97,8 @@ The worker must be running for deployments (and project deletions) to process.
 
 ## Usage
 
-1. **Create a project** — go to Projects → New Project and fill in:
+1. **Register / sign in** — create an account at `/register` or sign in at `/login`.
+2. **Create a project** — go to Projects → New Project and fill in:
    - Project name
    - Git repository URL
    - Branch
@@ -102,11 +107,11 @@ The worker must be running for deployments (and project deletions) to process.
    - Environment variables (optional)
    - PostgreSQL toggle (optional)
 
-2. **Deploy** — open the project detail page and click **Deploy**.
+3. **Deploy** — open the project detail page and click **Deploy**.
 
-3. **Monitor** — watch deployment status and logs on the project detail page. Failed deployments can be retried.
+4. **Monitor** — watch deployment status and logs on the project detail page. Failed deployments can be retried.
 
-4. **Update / delete** — edit project settings from the detail page, or delete the project to tear down containers, volumes, and runtime files asynchronously.
+5. **Update / delete** — edit project settings from the detail page, or delete the project to tear down containers, volumes, and runtime files asynchronously.
 
 ## How Deployments Work
 
@@ -138,6 +143,8 @@ providentra/
 │   └── delete-project/        # Project cleanup job processor
 ├── executor/                  # Docker + Caddy HTTP service (runs in Compose)
 ├── lib/
+│   ├── auth.ts                # Better Auth server instance
+│   ├── auth-client.ts         # Better Auth Vue client
 │   ├── adapters/              # Git, Caddy, Docker executor client
 │   ├── db.ts                  # Prisma client
 │   ├── project-facade.ts      # Maps simple project DTOs ↔ services
@@ -150,7 +157,7 @@ providentra/
 │   ├── projects/              # Cloned repos (gitignored)
 │   └── caddy/                 # Per-project Caddy site snippets
 ├── prisma/                    # Schema, migrations, generated client
-│                              # Project = namespace; Service = app/postgres/…
+│                              # User owns Project; Project = namespace; Service = app/postgres/…
 ├── prisma.config.ts           # Prisma CLI config (loads .env, datasource URL)
 ├── docker-compose.yml         # Platform infrastructure
 └── Caddyfile                  # Base Caddy config (imports runtime/caddy/*.caddy)
@@ -160,8 +167,9 @@ providentra/
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/projects` | List all projects |
-| POST | `/api/projects` | Create a project |
+| * | `/api/auth/*` | Better Auth handlers (sign-up, sign-in, session, sign-out) |
+| GET | `/api/projects` | List projects for the signed-in user |
+| POST | `/api/projects` | Create a project (owned by the signed-in user) |
 | GET | `/api/projects/:id` | Project details + deployment history |
 | PATCH | `/api/projects/:id` | Update project settings / env vars |
 | DELETE | `/api/projects/:id` | Queue project deletion (async teardown) |
@@ -169,12 +177,16 @@ providentra/
 | GET | `/api/deployments/:id` | Deployment status and logs |
 | POST | `/api/deployments/:id/retry` | Retry a failed deployment |
 
+All project and deployment routes require a valid Better Auth session. Unauthenticated requests receive `401`.
+
 ## Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `DATABASE_URL` | `postgres://providentra:providentra@localhost:5432/providentra` | Platform database |
 | `REDIS_URL` | `redis://localhost:6379` | Redis for BullMQ |
+| `BETTER_AUTH_SECRET` | (required) | Secret for Better Auth encryption/hashing (≥32 chars) |
+| `BETTER_AUTH_URL` | `http://localhost:3000` | Public base URL of the control panel |
 | `RUNTIME_DIR` | `./runtime` | Working directory for cloned repos and Caddy snippets |
 | `CADDY_CONFIG_DIR` | `./runtime/caddy` | Per-project Caddy site config output |
 | `CADDYFILE_PATH` | `./Caddyfile` | Base Caddyfile the worker forwards to the executor on reload |
@@ -260,6 +272,7 @@ Caddy listens on port 80 and proxies to the app's configured port on the host (`
 
 ## Future Enhancements
 
+- Accounts / organizations (shared project ownership, invites, roles)
 - GitHub integration (webhooks, OAuth)
 - SSL/TLS via Caddy automatic HTTPS
 - Multi-server deployments

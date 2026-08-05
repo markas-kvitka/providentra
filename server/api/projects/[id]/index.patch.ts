@@ -12,12 +12,15 @@ import {
 import type { ProjectDetail } from '../../../../shared/types'
 import { isProjectDeletionPending } from '../../../queue'
 import { updateProjectSchema } from '../../../utils/validation'
+import { requireOwnedProject } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
   const projectId = getRouterParam(event, 'id')
   if (!projectId) {
     throw createError({ statusCode: 400, statusMessage: 'Project ID is required' })
   }
+
+  await requireOwnedProject(event, projectId)
 
   const body = await readBody(event)
   const parsed = updateProjectSchema.safeParse(body)

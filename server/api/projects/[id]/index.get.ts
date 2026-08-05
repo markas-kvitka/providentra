@@ -1,12 +1,15 @@
 import { prisma } from '~~/lib/db'
 import { getPrimaryAppService, toProjectDetail } from '~~/lib/project-facade'
 import type { ProjectDetail, DeploymentSummary } from '../../../../shared/types'
+import { requireOwnedProject } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
   if (!id) {
     throw createError({ statusCode: 400, statusMessage: 'Project ID is required' })
   }
+
+  await requireOwnedProject(event, id)
 
   const project = await prisma.project.findUnique({
     where: { id },

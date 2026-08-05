@@ -1,6 +1,7 @@
 import { prisma } from '~~/lib/db'
 import { ACTIVE_DEPLOYMENT_STATUSES } from '~~/lib/deployment-status'
 import { enqueueDeployment, isProjectDeletionPending } from '../../../queue'
+import { requireOwnedProject } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
   const projectId = getRouterParam(event, 'id')
@@ -8,13 +9,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Project ID is required' })
   }
 
-  const project = await prisma.project.findUnique({
-    where: { id: projectId },
-  })
-
-  if (!project) {
-    throw createError({ statusCode: 404, statusMessage: 'Project not found' })
-  }
+  const { project } = await requireOwnedProject(event, projectId)
 
   if (await isProjectDeletionPending(projectId)) {
     throw createError({
