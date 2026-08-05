@@ -54,7 +54,27 @@ async function executorFetch(url: string, init?: RequestInit): Promise<Response>
 }
 
 export class DockerExecutorClient {
-  constructor(private readonly baseUrl: string) {}
+  private readonly token: string
+
+  constructor(
+    private readonly baseUrl: string,
+    token = process.env.EXECUTOR_TOKEN || '',
+  ) {
+    this.token = token
+  }
+
+  private authHeaders(extra?: Record<string, string>): Record<string, string> {
+    if (!this.token) {
+      throw new Error(
+        'EXECUTOR_TOKEN is required to call the docker executor. Set it in .env (see .env.example).',
+      )
+    }
+
+    return {
+      Authorization: `Bearer ${this.token}`,
+      ...extra,
+    }
+  }
 
   getProjectName(slug: string): string {
     return getComposeProjectName(slug)
@@ -63,7 +83,7 @@ export class DockerExecutorClient {
   async deploy(config: DeploymentConfig): Promise<DeploymentRunResult> {
     const response = await executorFetch(`${this.baseUrl}/deploy`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: this.authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(config),
     })
 
@@ -91,7 +111,10 @@ export class DockerExecutorClient {
     const query = params.toString()
     const response = await executorFetch(
       `${this.baseUrl}/deploy/${encodeURIComponent(slug)}${query ? `?${query}` : ''}`,
-      { method: 'DELETE' },
+      {
+        method: 'DELETE',
+        headers: this.authHeaders(),
+      },
     )
 
     if (response.status === 404) {
@@ -110,7 +133,7 @@ export class DockerExecutorClient {
   async reloadCaddy(caddyfile: string): Promise<DeploymentRunResult> {
     const response = await executorFetch(`${this.baseUrl}/caddy/reload`, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/caddyfile' },
+      headers: this.authHeaders({ 'Content-Type': 'text/caddyfile' }),
       body: caddyfile,
     })
 
@@ -124,7 +147,10 @@ export class DockerExecutorClient {
   }
 
   async logs(slug: string): Promise<string> {
-    const response = await executorFetch(`${this.baseUrl}/deploy/${encodeURIComponent(slug)}/logs`)
+    const response = await executorFetch(
+      `${this.baseUrl}/deploy/${encodeURIComponent(slug)}/logs`,
+      { headers: this.authHeaders() },
+    )
     const body = await response.json() as ExecutorResponse
 
     if (!response.ok || !body.ok) {

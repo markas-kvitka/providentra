@@ -52,9 +52,10 @@ services:
     container_name: providentra-docker-executor
     restart: unless-stopped
     ports:
-      - '3100:3100'
+      - '127.0.0.1:3100:3100'
     environment:
       EXECUTOR_PORT: 3100
+      EXECUTOR_TOKEN: ${EXECUTOR_TOKEN}
       RUNTIME_DIR: /runtime
       RUNTIME_HOST_DIR: ${PWD}/runtime
       DOCKER_SOCKET: /var/run/docker.sock

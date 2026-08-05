@@ -5,3 +5,4 @@ export const runtimeDir = resolve(process.env.RUNTIME_DIR || './runtime')
 export const runtimeHostDir = resolve(process.env.RUNTIME_HOST_DIR || runtimeDir)
 export const dockerSocket = process.env.DOCKER_SOCKET || '/var/run/docker.sock'
 export const caddyAdminUrl = process.env.CADDY_ADMIN_URL || 'http://caddy:2019'
+export const executorToken = process.env.EXECUTOR_TOKEN || ''

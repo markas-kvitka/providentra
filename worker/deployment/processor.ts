@@ -11,6 +11,7 @@ import {
   loadProjectWithServices,
   projectHasManagedVolumes,
 } from '~~/lib/project-facade'
+import { decryptEnvValue } from '~~/lib/secrets'
 import { getProjectDir } from '~~/lib/slug'
 import type { DeploymentJobData } from '~~/lib/queue'
 import type { DeploymentStatus } from '~~/shared/types'
@@ -66,7 +67,7 @@ function toDeployServices(
         port: service.port,
         environmentVariables: service.environmentVariables.map((e) => ({
           key: e.key,
-          value: e.value,
+          value: decryptEnvValue(e.value),
         })),
       })
       continue

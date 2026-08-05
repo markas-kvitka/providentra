@@ -8,6 +8,7 @@ import type {
 import { prisma } from './db'
 import { getComposeProjectName } from './slug'
 import { tryGetManagedRecipe } from './managed-services'
+import { decryptEnvValue, encryptEnvValue } from './secrets'
 
 export const PRIMARY_APP_SERVICE_NAME = 'web'
 export const POSTGRES_SERVICE_NAME = 'postgres'
@@ -72,7 +73,10 @@ export function toProjectDetail(project: ProjectWithServices): ProjectDetail {
     appPort: app.port,
     domain: app.domain,
     enablePostgres: hasPostgresService(project.services),
-    environmentVariables: env.map((e) => ({ key: e.key, value: e.value })),
+    environmentVariables: env.map((e) => ({
+      key: e.key,
+      value: decryptEnvValue(e.value),
+    })),
     createdAt: project.createdAt.toISOString(),
     updatedAt: project.updatedAt.toISOString(),
   }
@@ -112,7 +116,7 @@ export async function createProjectFromInput(data: CreateProjectInput, slug: str
             environmentVariables: {
               create: data.environmentVariables.map((env) => ({
                 key: env.key,
-                value: env.value,
+                value: encryptEnvValue(env.value),
               })),
             },
           },
@@ -156,7 +160,7 @@ export async function updateProjectFromInput(projectId: string, data: UpdateProj
         environmentVariables: {
           create: data.environmentVariables.map((env) => ({
             key: env.key,
-            value: env.value,
+            value: encryptEnvValue(env.value),
           })),
         },
       },
