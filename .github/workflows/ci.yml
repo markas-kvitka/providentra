@@ -5,33 +5,13 @@ on:
     branches: [master]
   pull_request:
 
+env:
+  ENV_ENCRYPTION_KEY: dGVzdC1lbnYtZW5jcnlwdGlvbi1rZXktMzJieXRlcSE=
+  EXECUTOR_TOKEN: ci-executor-token-for-tests
+
 jobs:
-  check:
+  typecheck:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: providentra
-          POSTGRES_PASSWORD: providentra
-          POSTGRES_DB: providentra
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U providentra"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-
-    env:
-      DATABASE_URL: postgres://providentra:providentra@localhost:5432/providentra
-      REDIS_URL: redis://localhost:6379
-      BETTER_AUTH_SECRET: ci-better-auth-secret-at-least-32-chars
-      BETTER_AUTH_URL: http://localhost:3000
-      EXECUTOR_TOKEN: ci-executor-token-for-tests
-      ENV_ENCRYPTION_KEY: dGVzdC1lbnYtZW5jcnlwdGlvbi1rZXktMzJieXRlcSE=
-
     steps:
       - uses: actions/checkout@v4
 
@@ -53,11 +33,73 @@ jobs:
       - name: Validate Prisma schema
         run: pnpm exec prisma validate
 
-      - name: Run migrations
-        run: pnpm run db:migrate
-
       - name: Typecheck
         run: pnpm run typecheck
 
-      - name: Test
-        run: pnpm test
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.8.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm run db:generate
+
+      - name: Unit tests
+        run: pnpm exec vitest run tests/unit
+
+  integration:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: providentra
+          POSTGRES_PASSWORD: providentra
+          POSTGRES_DB: providentra
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U providentra"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://providentra:providentra@localhost:5432/providentra
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.8.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm run db:generate
+
+      - name: Run migrations
+        run: pnpm run db:migrate
+
+      - name: Integration tests
+        run: pnpm exec vitest run tests/integration
