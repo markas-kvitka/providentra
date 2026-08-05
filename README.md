@@ -61,7 +61,7 @@ This starts PostgreSQL, Redis, Caddy, and the Docker executor (`http://127.0.0.1
 cp .env.example .env
 ```
 
-Set `BETTER_AUTH_SECRET` to a long random string (at least 32 characters), e.g. `openssl rand -base64 32`. Keep `BETTER_AUTH_URL=http://localhost:3000` for local development.
+Set `BETTER_AUTH_SECRET` to a long random string (at least 32 characters), e.g. `openssl rand -base64 32`. Also set `EXECUTOR_TOKEN` and `ENV_ENCRYPTION_KEY` (each: `openssl rand -base64 32`). Keep `BETTER_AUTH_URL=http://localhost:3000` for local development.
 
 ### 3. Install dependencies
 
@@ -149,6 +149,7 @@ providentra/
 │   ├── db.ts                  # Prisma client
 │   ├── project-facade.ts      # Maps simple project DTOs ↔ services
 │   ├── managed-services.ts    # Catalog of managed add-on recipes (postgres, redis, …)
+│   ├── secrets.ts             # AES-GCM encrypt/decrypt for project env vars
 │   ├── queue.ts               # Shared queue definitions
 │   └── project-cleanup.ts     # Teardown helpers
 ├── shared/
@@ -187,10 +188,12 @@ All project and deployment routes require a valid Better Auth session. Unauthent
 | `REDIS_URL` | `redis://localhost:6379` | Redis for BullMQ |
 | `BETTER_AUTH_SECRET` | (required) | Secret for Better Auth encryption/hashing (≥32 chars) |
 | `BETTER_AUTH_URL` | `http://localhost:3000` | Public base URL of the control panel |
+| `EXECUTOR_TOKEN` | (required) | Shared bearer token for the Docker executor API (worker and Compose must match) |
+| `ENV_ENCRYPTION_KEY` | (required) | Base64-encoded 32-byte AES-256-GCM key for project env vars at rest |
 | `RUNTIME_DIR` | `./runtime` | Working directory for cloned repos and Caddy snippets |
 | `CADDY_CONFIG_DIR` | `./runtime/caddy` | Per-project Caddy site config output |
 | `CADDYFILE_PATH` | `./Caddyfile` | Base Caddyfile the worker forwards to the executor on reload |
-| `DOCKER_EXECUTOR_URL` | `http://127.0.0.1:3100` | Docker executor HTTP API (used by worker / control plane) |
+| `DOCKER_EXECUTOR_URL` | `http://127.0.0.1:3100` | Docker executor HTTP API (used by worker / control plane; published on loopback only) |
 | `CADDY_ADMIN_URL` | `http://caddy:2019` | Caddy admin API address the **executor** uses (internal Docker network; not published to the host) |
 | `EXECUTOR_PORT` | `3100` | Port when running the executor via `pnpm run executor` |
 | `DOCKER_SOCKET` | `/var/run/docker.sock` | Docker socket path used by the executor |
@@ -235,7 +238,13 @@ docker compose ps docker-executor
 curl -s http://127.0.0.1:3100/health
 ```
 
+The executor listens on loopback only (`127.0.0.1:3100`). Deploy/teardown/logs require `Authorization: Bearer $EXECUTOR_TOKEN` (health is open for Compose checks). Ensure `.env` has matching `EXECUTOR_TOKEN` for the worker and Compose.
+
 The executor needs access to `/var/run/docker.sock` and the `./runtime` volume.
+
+### Env vars fail to decrypt
+
+Confirm `ENV_ENCRYPTION_KEY` is set and is a base64-encoded 32-byte key (`openssl rand -base64 32`). Changing the key after encrypting values will break decrypt until project env vars are re-saved.
 
 ## Deployed App Requirements
 
@@ -258,6 +267,7 @@ The executor needs access to `/var/run/docker.sock` and the `./runtime` volume.
 | `pnpm run db:migrate` | Apply pending migrations |
 | `pnpm run db:push` | Push schema changes without migration files |
 | `pnpm run db:studio` | Open Prisma Studio |
+| `pnpm run typecheck` | Generate Nuxt types and run TypeScript checks |
 
 ## Local Domain Setup
 

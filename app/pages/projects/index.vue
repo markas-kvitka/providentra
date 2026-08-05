@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProjectSummary } from '../../shared/types'
+import type { ProjectSummary } from '../../../shared/types'
 
 const { data: projects, pending, error, refresh } = await useFetch<ProjectSummary[]>('/api/projects')
 
