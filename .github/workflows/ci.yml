@@ -6,6 +6,7 @@ on:
   pull_request:
 
 env:
+  DATABASE_URL: postgres://providentra:providentra@localhost:5432/providentra
   ENV_ENCRYPTION_KEY: dGVzdC1lbnYtZW5jcnlwdGlvbi1rZXktMzJieXRlcSE=
   EXECUTOR_TOKEN: ci-executor-token-for-tests
 
@@ -76,9 +77,6 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
-
-    env:
-      DATABASE_URL: postgres://providentra:providentra@localhost:5432/providentra
 
     steps:
       - uses: actions/checkout@v4
