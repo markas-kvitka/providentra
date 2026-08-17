@@ -9,7 +9,7 @@ Living plan for Providentra. Update this file when a feature lands — do not re
 3. If a bug in [Stabilize](#1-stabilize-the-deploy-path) is fixed, delete it from that list rather than leaving a stale warning.
 4. Keep [Next](#next) ordered. New ideas go under [Later](#3-platform) or [Parking lot](#parking-lot), not the top of Next, unless they unblock deploy safety.
 
-Last reviewed: 2026-08-13 on `master`.
+Last reviewed: 2026-08-17 on `feat/bullmq-lock-duration`.
 
 ## Product thesis
 
@@ -17,7 +17,7 @@ Self-hosted “Vercel-lite” on one machine: Nuxt control panel → BullMQ work
 
 A **Project** is a user-owned namespace. Under it, **Services** are the real units (today: one `web` app and an optional `postgres`). The control panel still presents a simple single-app form; the API maps that onto the service model via `lib/project-facade.ts`.
 
-Treat the stack as a **single-operator local lab** until Stabilize is done. Do not share the host: a failed redeploy can tear down a live app and its Postgres volume.
+Treat the stack as a **single-operator local lab** until Stabilize is done. Do not share the host until a failed redeploy cannot tear down a live app, and long builds cannot stall the queue.
 
 ## Architecture decisions
 
@@ -44,7 +44,6 @@ Do these in order. Stabilize before product; product before platform.
 
 Failed builds must not destroy the last good release. Long builds must not stall the queue.
 
-- [ ] Set BullMQ `lockDuration` / lock renewal on deploy and delete workers (default 30s stalls real Docker builds)
 - [ ] Fix `GitAdapter` for URL and branch changes (`set-url` / refetch, or wipe the checkout) — `lib/adapters/git.ts`
 - [ ] Unique `Service.domain` (and `port` until Caddy uses Docker DNS). Sanitize hostnames before writing Caddy snippets
 - [ ] Keep deployment status as `building` until `deploy()` returns; do not rewrite `startedAt` on every status change
@@ -91,6 +90,7 @@ Keep this short. Detail lives in git history.
 - [x] Executor loopback + bearer token; env encryption; CI typecheck (`feat/platform-hardening`)
 - [x] Vitest unit + integration suite, split CI jobs (`#4`)
 - [x] Failed redeploy leaves previous containers, volumes, and Caddy config; executor builds before replacing the app container
+- [x] BullMQ `lockDuration` 10m + 30s lock renewal on deploy and delete workers; stalled jobs are not retried
 
 ## Parking lot
 
@@ -108,6 +108,7 @@ Ideas that are valid but not sequenced. Promote into Next only with a reason.
 
 Do not “discover” these again. Delete the line when the code is fixed.
 
+1. **Failed redeploy teardown** — `worker/deployment/processor.ts` catch still calls `down({ removeVolumes })` and removes Caddy (`feat/keep-last-good-release`).
 1. **BullMQ 30s lock** — `worker/deployment/worker.ts` and `worker/delete-project/worker.ts` set only `concurrency: 1`.
 2. **Git remote/branch not updated** on an existing `runtime/projects/{slug}/repo`.
 3. **`building` is skipped** — status flips to `starting` before `deploy()`.

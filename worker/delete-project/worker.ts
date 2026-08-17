@@ -1,5 +1,6 @@
 import { Worker, type ConnectionOptions } from 'bullmq'
 import { PROJECT_DELETE_QUEUE_NAME, type DeleteProjectJobData } from '~~/lib/queue'
+import { attachLockDiagnostics, longRunningWorkerOptions } from '../options'
 import { processProjectDeletion } from './processor'
 
 export function createDeleteProjectWorker(connection: ConnectionOptions): Worker<DeleteProjectJobData> {
@@ -10,7 +11,7 @@ export function createDeleteProjectWorker(connection: ConnectionOptions): Worker
       await processProjectDeletion(job.data)
       console.log(`Finished project deletion job ${job.id}`)
     },
-    { connection, concurrency: 1 },
+    { connection, ...longRunningWorkerOptions() },
   )
 
   worker.on('completed', (job) => {
@@ -20,6 +21,8 @@ export function createDeleteProjectWorker(connection: ConnectionOptions): Worker
   worker.on('failed', (job, err) => {
     console.error(`Delete job ${job?.id} failed:`, err.message)
   })
+
+  attachLockDiagnostics(worker, 'Delete')
 
   return worker
 }
