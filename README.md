@@ -125,7 +125,7 @@ The worker must be running for deployments (and project deletions) to process.
    - Publishes the app container on the app service's configured host port
 5. Worker writes a Caddy config snippet for the app service domain under `./runtime/caddy/`, then asks the executor to reload Caddy (`POST /caddy/reload` → Caddy admin API `/load` on the internal Docker network)
 6. Worker updates each service row with container name and `running` status
-7. On failure, the executor tears down project containers and status is set to `failed`
+7. On failure, the previous release is left running (containers, volumes, and Caddy config stay) and status is set to `failed`
 
 Project deletion is a separate BullMQ job: it stops containers, removes volumes/files when requested, clears Caddy config, and deletes the project row.
 

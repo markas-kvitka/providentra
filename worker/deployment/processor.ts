@@ -9,7 +9,6 @@ import {
   containerNameForService,
   getPrimaryAppService,
   loadProjectWithServices,
-  projectHasManagedVolumes,
 } from '~~/lib/project-facade'
 import { decryptEnvValue } from '~~/lib/secrets'
 import { getProjectDir } from '~~/lib/slug'
@@ -166,28 +165,6 @@ export async function processDeployment(data: DeploymentJobData): Promise<void> 
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     await appendLog(deploymentId, `ERROR: ${message}`)
-
-    try {
-      await appendLog(deploymentId, 'Cleaning up failed deployment')
-      await deploymentAdapter.down({
-        removeVolumes: projectHasManagedVolumes(project.services),
-      })
-      await caddyAdapter.removeProxyConfig(project.slug, app.domain)
-
-      for (const service of project.services) {
-        await prisma.service.update({
-          where: { id: service.id },
-          data: {
-            deploymentId: null,
-            containerName: null,
-            status: 'failed',
-          },
-        })
-      }
-    } catch (cleanupError) {
-      const cleanupMessage = cleanupError instanceof Error ? cleanupError.message : String(cleanupError)
-      await appendLog(deploymentId, `Cleanup warning: ${cleanupMessage}`)
-    }
 
     await updateStatus(deploymentId, 'failed', {
       errorMessage: message,

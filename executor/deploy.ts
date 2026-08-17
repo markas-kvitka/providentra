@@ -278,8 +278,6 @@ async function createAppContainer(
 
   if (hasDockerfile) {
     const imageTag = `${names.projectName}-app:latest`
-    messages.push(`Building image ${imageTag}`)
-    await buildAppImage(docker, projectDir, imageTag, messages)
 
     const container = await docker.createContainer({
       name: names.app,
@@ -367,6 +365,13 @@ export async function deployProject(config: DeployRequest): Promise<DeployResult
   }
 
   await pruneUnusedManagedServices(docker, names.projectName, desiredManagedTypes, messages)
+
+  const hasDockerfile = existsSync(join(projectDir, 'Dockerfile'))
+  if (hasDockerfile) {
+    const imageTag = `${names.projectName}-app:latest`
+    messages.push(`Building image ${imageTag}`)
+    await buildAppImage(docker, projectDir, imageTag, messages)
+  }
 
   await removeContainerIfExists(docker, names.app)
   await createAppContainer(
