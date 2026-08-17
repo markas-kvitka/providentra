@@ -284,11 +284,6 @@ Add entries to `/etc/hosts` for your project domains:
 
 Caddy listens on port 80 and proxies to the app's configured port on the host (`host.docker.internal`). Automatic HTTPS is currently disabled (`auto_https off`).
 
-## Future Enhancements
+## Roadmap
 
-- Accounts / organizations (shared project ownership, invites, roles)
-- GitHub integration (webhooks, OAuth)
-- SSL/TLS via Caddy automatic HTTPS
-- Multi-server deployments
-- Rollback to previous deployment
-- Build caching
+Sequenced work, architecture decisions, and known footguns live in [`ROADMAP.md`](ROADMAP.md). Update that file when a feature lands instead of re-reviewing the repo.

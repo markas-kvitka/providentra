@@ -1,5 +1,6 @@
 import { Worker, type ConnectionOptions } from 'bullmq'
 import { DEPLOYMENT_QUEUE_NAME, type DeploymentJobData } from '~~/lib/queue'
+import { attachLockDiagnostics, longRunningWorkerOptions } from '../options'
 import { processDeployment } from './processor'
 
 export function createDeploymentWorker(connection: ConnectionOptions): Worker<DeploymentJobData> {
@@ -10,7 +11,7 @@ export function createDeploymentWorker(connection: ConnectionOptions): Worker<De
       await processDeployment(job.data)
       console.log(`Finished deployment job ${job.id}`)
     },
-    { connection, concurrency: 1 },
+    { connection, ...longRunningWorkerOptions() },
   )
 
   worker.on('completed', (job) => {
@@ -20,6 +21,8 @@ export function createDeploymentWorker(connection: ConnectionOptions): Worker<De
   worker.on('failed', (job, err) => {
     console.error(`Deployment job ${job?.id} failed:`, err.message)
   })
+
+  attachLockDiagnostics(worker, 'Deployment')
 
   return worker
 }
